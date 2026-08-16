@@ -1,6 +1,0 @@
-{
-  "name": "Della's 21st Birthday",
-  "description": "Web ucapan ulang tahun romantis ke-21 untuk Della Puspa Ardiati dengan foto kenangan, musik lembut, hitung mundur, kelopak bunga jatuh, dan ucapan rahasia teman.",
-  "requestFramePermissions": ["microphone"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

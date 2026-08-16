@@ -1,7 +1,7 @@
 import { triggerFullscreenConfettiExplosion, triggerRomanticConfetti } from './confetti.js';
 import { romanticSynth } from './audio.js';
 
-export function initCountdown(initialDate = '2026-08-15T00:00:00+07:00') {
+export function initCountdown(initialDate = '2026-08-19T00:00:00+07:00') {
   let targetDate = localStorage.getItem('della_birthday_date') || initialDate;
   let hasTriggeredZero = false;
   let intervalId = null;

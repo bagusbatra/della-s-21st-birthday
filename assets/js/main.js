@@ -1,13 +1,11 @@
-import './style.css';
-import { romanticSynth } from './js/audio.js';
-import { triggerRomanticConfetti, triggerFullscreenConfettiExplosion } from './js/confetti.js';
-import { initPetalCanvas } from './js/petals.js';
-import { initCountdown } from './js/countdown.js';
-import { initBirthdayCake } from './js/cake.js';
-import { initGallery } from './js/gallery.js';
-import { initReasons } from './js/reasons.js';
-import { initSecretWishes } from './js/wishes.js';
-import { initLoveLetter } from './js/letter.js';
+import { romanticSynth } from './audio.js';
+import { triggerRomanticConfetti, triggerFullscreenConfettiExplosion } from './confetti.js';
+import { initPetalCanvas } from './petals.js';
+import { initCountdown } from './countdown.js';
+import { initBirthdayCake } from './cake.js';
+import { initGallery } from './gallery.js';
+import { initSecretWishes } from './wishes.js';
+import { initLoveLetter } from './letter.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Falling Rose Petals
@@ -22,16 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Polaroid Photo Gallery
   initGallery();
 
-  // 5. 21 Reasons
-  initReasons();
-
-  // 6. Secret Wishes Envelopes
+  // 5. Secret Wishes Envelopes
   initSecretWishes();
 
-  // 7. Love Letter Modal
+  // 6. Love Letter Modal
   const loveLetter = initLoveLetter();
 
-  // 8. Background Music Controller & Navbar Music Button
+  // 7. Background Music Controller & Navbar Music Button
   const btnNavMusic = document.getElementById('btn-nav-music');
   const musicFloatingBar = document.getElementById('music-floating-bar');
   const btnToggleFloatingMusic = document.getElementById('btn-toggle-floating-music');
@@ -104,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 9. Mobile Hamburger Menu
+  // 8. Mobile Hamburger Menu
   const btnMobileMenu = document.getElementById('btn-mobile-menu');
   const mobileNavMenu = document.getElementById('mobile-nav-menu');
 
@@ -120,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 10. Hero Confetti & Action Buttons
+  // 9. Hero Confetti & Action Buttons
   const btnHeroConfetti = document.getElementById('btn-hero-confetti');
   if (btnHeroConfetti) {
     btnHeroConfetti.addEventListener('click', () => {
@@ -129,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 11. Share & Copy Link Button
+  // 10. Share & Copy Link Button
   const btnShareApp = document.getElementById('btn-share-app');
   if (btnShareApp) {
     btnShareApp.addEventListener('click', async () => {
@@ -146,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 12. Back to Top Button
+  // 11. Back to Top Button
   const btnBackToTop = document.getElementById('btn-back-to-top');
   if (btnBackToTop) {
     btnBackToTop.addEventListener('click', () => {
@@ -154,42 +149,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 13. Export HTML Modal
-  const exportModal = document.getElementById('export-html-modal');
-  const btnOpenExportNav = document.getElementById('btn-nav-export-html');
-  const btnOpenExportFooter = document.getElementById('btn-footer-export-html');
-  const btnCloseExport = document.getElementById('btn-close-export');
-  const btnDownloadHtml = document.getElementById('btn-download-html-file');
-
-  function openExportModal() {
-    if (exportModal) exportModal.classList.remove('hidden');
-  }
-
-  function closeExportModal() {
-    if (exportModal) exportModal.classList.add('hidden');
-  }
-
-  if (btnOpenExportNav) btnOpenExportNav.addEventListener('click', openExportModal);
-  if (btnOpenExportFooter) btnOpenExportFooter.addEventListener('click', openExportModal);
-  if (btnCloseExport) btnCloseExport.addEventListener('click', closeExportModal);
-
-  if (btnDownloadHtml) {
-    btnDownloadHtml.addEventListener('click', async () => {
-      try {
-        const res = await fetch('/della_21st_birthday.html');
-        const text = await res.text();
-        const blob = new Blob([text], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'della_puspa_ardiati_21st_birthday.html';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } catch (e) {
-        window.open('/della_21st_birthday.html', '_blank');
-      }
-    });
-  }
 });

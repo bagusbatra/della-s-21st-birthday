@@ -1,3 +1,31 @@
+<?php
+/**
+ * Release gate: the full site only renders on/after the birthday date.
+ * Before that, visitors see a locked countdown gate.
+ *
+ * Developer access (bypasses the gate while building/testing):
+ *   index.php?dev=on   -> unlocks the full site early (stored in a cookie)
+ *   index.php?dev=off  -> turns developer mode back off before launch
+ */
+date_default_timezone_set('Asia/Jakarta');
+
+define('DELLA_RELEASE_TIMESTAMP', strtotime('2026-08-19 00:00:00'));
+define('DELLA_DEV_COOKIE', 'della_dev_mode');
+
+if (isset($_GET['dev'])) {
+    if ($_GET['dev'] === 'on') {
+        setcookie(DELLA_DEV_COOKIE, '1', time() + 60 * 60 * 24 * 365, '/');
+        $_COOKIE[DELLA_DEV_COOKIE] = '1';
+    } elseif ($_GET['dev'] === 'off') {
+        setcookie(DELLA_DEV_COOKIE, '', time() - 3600, '/');
+        unset($_COOKIE[DELLA_DEV_COOKIE]);
+    }
+}
+
+$isDeveloperMode = isset($_COOKIE[DELLA_DEV_COOKIE]) && $_COOKIE[DELLA_DEV_COOKIE] === '1';
+$isReleased = time() >= DELLA_RELEASE_TIMESTAMP;
+$showFullSite = $isReleased || $isDeveloperMode;
+?>
 <!doctype html>
 <html lang="id" class="scroll-smooth">
   <head>
@@ -10,9 +38,106 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Compiled Stylesheet (Tailwind + Custom CSS) -->
+    <link rel="stylesheet" href="assets/css/style.css">
   </head>
   <body class="bg-[#fffafb] text-[#5d1c32] antialiased selection:bg-[#ffc2d1] selection:text-[#5d1c32] min-h-screen overflow-x-hidden font-sans">
-    
+
+    <?php if ($isDeveloperMode && !$isReleased): ?>
+    <!-- Developer Mode Banner (only visible pre-release, only to whoever unlocked ?dev=on) -->
+    <div class="dev-mode-banner">
+      🔧 Mode Developer Aktif — situs asli masih terkunci sampai 19 Agustus 2026.
+      <a href="?dev=off">Nonaktifkan mode developer</a>
+    </div>
+    <?php endif; ?>
+
+    <?php if (!$showFullSite): ?>
+
+    <!-- ============================= -->
+    <!-- Release Gate (locked view)     -->
+    <!-- ============================= -->
+    <div id="release-gate" class="release-gate">
+      <div class="splash-hearts" aria-hidden="true">
+        <span class="splash-heart" style="left:4%; font-size:1.1rem; animation-duration:9.5s; animation-delay:.2s; --drift:22px;">💗</span>
+        <span class="splash-heart" style="left:12%; font-size:1.6rem; animation-duration:12s; animation-delay:1.6s; --drift:-18px;">🌸</span>
+        <span class="splash-heart" style="left:20%; font-size:.9rem; animation-duration:8.5s; animation-delay:.6s; --drift:14px;">💕</span>
+        <span class="splash-heart" style="left:29%; font-size:1.3rem; animation-duration:11s; animation-delay:2.4s; --drift:-24px;">✨</span>
+        <span class="splash-heart" style="left:38%; font-size:1rem; animation-duration:10s; animation-delay:0s; --drift:20px;">💖</span>
+        <span class="splash-heart" style="left:47%; font-size:1.5rem; animation-duration:13s; animation-delay:1.1s; --drift:-16px;">🌸</span>
+        <span class="splash-heart" style="left:56%; font-size:1.1rem; animation-duration:9s; animation-delay:2.8s; --drift:18px;">💗</span>
+        <span class="splash-heart" style="left:64%; font-size:1.4rem; animation-duration:12.5s; animation-delay:.9s; --drift:-20px;">✨</span>
+        <span class="splash-heart" style="left:72%; font-size:.9rem; animation-duration:8s; animation-delay:1.9s; --drift:16px;">💕</span>
+        <span class="splash-heart" style="left:80%; font-size:1.6rem; animation-duration:11.5s; animation-delay:.3s; --drift:-22px;">💖</span>
+        <span class="splash-heart" style="left:88%; font-size:1.1rem; animation-duration:10.5s; animation-delay:2.2s; --drift:20px;">🌸</span>
+        <span class="splash-heart" style="left:94%; font-size:1.3rem; animation-duration:9.8s; animation-delay:1.4s; --drift:-14px;">💗</span>
+      </div>
+
+      <div class="release-gate-content">
+        <div class="splash-ring">🔒</div>
+        <p class="font-cormorant italic text-lg sm:text-xl text-[#8a5d6c]">Untuk Della Puspa Ardiati,</p>
+        <h1 class="font-romantic text-4xl sm:text-6xl text-[#5d1c32] mt-1">Kejutan Spesial Sedang Disiapkan</h1>
+        <p class="font-serif-elegant text-lg sm:text-xl text-[#a44a66] font-semibold mt-3">Akan terbuka tepat pada 19 Agustus 2026 💗</p>
+
+        <div id="gate-countdown-grid" class="gate-countdown-grid">
+          <div class="gate-countdown-box">
+            <span id="gate-cd-days">00</span>
+            <small>Hari</small>
+          </div>
+          <div class="gate-countdown-box">
+            <span id="gate-cd-hours">00</span>
+            <small>Jam</small>
+          </div>
+          <div class="gate-countdown-box">
+            <span id="gate-cd-minutes">00</span>
+            <small>Menit</small>
+          </div>
+          <div class="gate-countdown-box">
+            <span id="gate-cd-seconds">00</span>
+            <small>Detik</small>
+          </div>
+        </div>
+
+        <p class="font-cormorant italic text-sm text-[#8a5d6c] mt-6">Sabar ya, sedikit lagi waktunya tiba&hellip;</p>
+      </div>
+    </div>
+
+    <script src="assets/js/gate.js"></script>
+
+    <?php else: ?>
+
+    <!-- Romantic Splash Screen (shown 10 seconds on load) -->
+    <div id="splash-screen">
+      <div class="splash-hearts" aria-hidden="true">
+        <span class="splash-heart" style="left:4%; font-size:1.1rem; animation-duration:9.5s; animation-delay:.2s; --drift:22px;">💗</span>
+        <span class="splash-heart" style="left:12%; font-size:1.6rem; animation-duration:12s; animation-delay:1.6s; --drift:-18px;">🌸</span>
+        <span class="splash-heart" style="left:20%; font-size:.9rem; animation-duration:8.5s; animation-delay:.6s; --drift:14px;">💕</span>
+        <span class="splash-heart" style="left:29%; font-size:1.3rem; animation-duration:11s; animation-delay:2.4s; --drift:-24px;">✨</span>
+        <span class="splash-heart" style="left:38%; font-size:1rem; animation-duration:10s; animation-delay:0s; --drift:20px;">💖</span>
+        <span class="splash-heart" style="left:47%; font-size:1.5rem; animation-duration:13s; animation-delay:1.1s; --drift:-16px;">🌸</span>
+        <span class="splash-heart" style="left:56%; font-size:1.1rem; animation-duration:9s; animation-delay:2.8s; --drift:18px;">💗</span>
+        <span class="splash-heart" style="left:64%; font-size:1.4rem; animation-duration:12.5s; animation-delay:.9s; --drift:-20px;">✨</span>
+        <span class="splash-heart" style="left:72%; font-size:.9rem; animation-duration:8s; animation-delay:1.9s; --drift:16px;">💕</span>
+        <span class="splash-heart" style="left:80%; font-size:1.6rem; animation-duration:11.5s; animation-delay:.3s; --drift:-22px;">💖</span>
+        <span class="splash-heart" style="left:88%; font-size:1.1rem; animation-duration:10.5s; animation-delay:2.2s; --drift:20px;">🌸</span>
+        <span class="splash-heart" style="left:94%; font-size:1.3rem; animation-duration:9.8s; animation-delay:1.4s; --drift:-14px;">💗</span>
+      </div>
+
+      <div class="splash-content">
+        <div class="splash-ring">❤️</div>
+        <p class="splash-line splash-line-1 font-cormorant italic text-lg sm:text-xl text-[#8a5d6c]">Untuk seseorang yang teristimewa,</p>
+        <h1 class="splash-line splash-line-2 font-romantic text-5xl sm:text-7xl text-[#5d1c32]">Della Puspa Ardiati</h1>
+        <p class="splash-line splash-line-3 font-serif-elegant text-xl sm:text-2xl text-[#a44a66] font-semibold">Selamat Ulang Tahun ke-21 🎂</p>
+        <p class="splash-line splash-line-4 font-cormorant italic text-sm sm:text-base text-[#8a5d6c]">Sedang merangkai kenangan dan doa terindah untukmu&hellip;</p>
+
+        <div class="splash-progress-track">
+          <div id="splash-progress-bar"></div>
+        </div>
+
+        <button id="btn-skip-splash" type="button" class="splash-skip">Lewati ✕</button>
+      </div>
+    </div>
+
     <!-- Falling Rose Petals Canvas -->
     <canvas id="petalCanvas" class="fixed inset-0 pointer-events-none z-10 w-full h-full"></canvas>
 
@@ -35,7 +160,6 @@
           <a href="#countdown-section" class="hover:text-[#5d1c32] transition-colors">Hitung Mundur</a>
           <a href="#cake-section" class="hover:text-[#5d1c32] transition-colors">Tiup Lilin 21</a>
           <a href="#memories-section" class="hover:text-[#5d1c32] transition-colors">Kenangan Indah</a>
-          <a href="#reasons-section" class="hover:text-[#5d1c32] transition-colors">21 Alasan Cinta</a>
           <a href="#wishes-section" class="hover:text-[#5d1c32] transition-colors">Amplop Doa</a>
         </nav>
 
@@ -49,17 +173,6 @@
             class="p-2 rounded-full border border-[#ffe1e9] bg-white/80 text-[#5d1c32] hover:bg-[#fdf2f8] transition-all active:scale-95"
           >
             <span id="music-playing-indicator" class="text-sm block">🎵</span>
-          </button>
-
-          <!-- Export HTML Single-File Button -->
-          <button
-            id="btn-nav-export-html"
-            type="button"
-            title="Unduh Single-File HTML/CSS/JS"
-            class="px-3 py-1.5 rounded-xl bg-white/90 hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-xs shadow-xs transition-all hidden sm:flex items-center gap-1.5 active:scale-95"
-          >
-            <span class="font-mono font-bold text-[11px] bg-[#fce7f3] px-1.5 py-0.5 rounded text-[#5d1c32]">&lt;/&gt;</span>
-            <span>Unduh HTML</span>
           </button>
 
           <!-- Love Letter Button -->
@@ -88,7 +201,6 @@
         <a href="#countdown-section" class="block py-2 px-3 rounded-lg hover:bg-[#fce7f3]">Hitung Mundur</a>
         <a href="#cake-section" class="block py-2 px-3 rounded-lg hover:bg-[#fce7f3]">Tiup 21 Lilin</a>
         <a href="#memories-section" class="block py-2 px-3 rounded-lg hover:bg-[#fce7f3]">Kenangan Indah</a>
-        <a href="#reasons-section" class="block py-2 px-3 rounded-lg hover:bg-[#fce7f3]">21 Alasan Cinta</a>
         <a href="#wishes-section" class="block py-2 px-3 rounded-lg hover:bg-[#fce7f3]">Amplop Doa Teman</a>
       </div>
     </header>
@@ -114,7 +226,7 @@
       <!-- Hero Section -->
       <section id="hero-section" class="min-h-[85vh] flex flex-col items-center justify-center text-center px-4 pt-12 pb-16 relative">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fce7f3] border border-[#ffc2d1] text-[#5d1c32] text-xs font-semibold uppercase tracking-wider mb-6 animate-soft-pulse">
-          <span>✨ 15 Agustus • 21st Special Milestone ✨</span>
+          <span>✨ 19 Agustus • 21st Special Milestone ✨</span>
         </div>
 
         <h1 class="font-serif-elegant text-4xl sm:text-6xl md:text-7xl font-normal text-[#5d1c32] max-w-4xl leading-tight mb-4">
@@ -156,7 +268,7 @@
           </h2>
 
           <div class="flex flex-wrap items-center justify-center gap-2 text-[#8a5d6c] text-xs sm:text-sm mb-6">
-            <span>Target Momen: <strong id="target-date-display" class="text-[#5d1c32]">15 Agustus 2026, 00:00 WIB</strong></span>
+            <span>Target Momen: <strong id="target-date-display" class="text-[#5d1c32]">19 Agustus 2026, 00:00 WIB</strong></span>
             <button
               id="btn-toggle-edit-countdown"
               type="button"
@@ -287,7 +399,7 @@
               <span class="font-serif-elegant text-[#5d1c32] text-xs tracking-widest uppercase font-semibold">Happy Birthday My Love</span>
             </div>
             <div class="w-80 sm:w-96 h-14 bg-white rounded-b-3xl border-t-2 border-[#ffc2d1] flex items-center justify-around px-4 shadow-sm">
-              <span class="text-xs text-[#5d1c32] font-medium">✨ 15 Agustus ✨</span>
+              <span class="text-xs text-[#5d1c32] font-medium">✨ 19 Agustus ✨</span>
               <span class="text-xs text-[#5d1c32] font-medium">✨ Della Puspa Ardiati ✨</span>
             </div>
           </div>
@@ -343,34 +455,6 @@
 
         <!-- Gallery Grid -->
         <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Rendered by JS -->
-        </div>
-      </section>
-
-      <!-- 21 Reasons to Love Della -->
-      <section id="reasons-section" class="max-w-6xl mx-auto px-4">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-          <div class="text-center sm:text-left">
-            <p class="uppercase tracking-[0.3em] text-xs text-[#a44a66] font-medium mb-1">21 Milestone Chapters</p>
-            <h2 class="font-serif-elegant text-3xl sm:text-4xl text-[#5d1c32]">21 Hal yang Membuatku Mengagumi Della</h2>
-            <p class="text-[#8a5d6c] text-xs sm:text-sm mt-1">Di usiamu yang ke-21, ada jutaan alasan untuk mencintaimu. Inilah 21 hal di antaranya.</p>
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <span id="reasons-read-counter" class="px-3.5 py-1.5 rounded-full bg-[#fce7f3] text-[#5d1c32] text-xs font-semibold border border-[#ffc2d1]">
-              0 dari 21 Telah Terbuka 💖
-            </span>
-            <button
-              id="btn-open-all-reasons"
-              type="button"
-              class="px-3.5 py-1.5 rounded-full bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] text-xs font-medium"
-            >
-              Buka Semua
-            </button>
-          </div>
-        </div>
-
-        <!-- Reasons Grid -->
-        <div id="reasons-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- Rendered by JS -->
         </div>
       </section>
@@ -434,13 +518,6 @@
             Baca Kembali Surat Cinta 💌
           </button>
           <button
-            id="btn-footer-export-html"
-            type="button"
-            class="px-5 py-2.5 rounded-full bg-[#fce7f3] hover:bg-[#ffc2d1]/60 text-[#5d1c32] border border-[#ffc2d1] font-medium text-xs shadow-xs"
-          >
-            Unduh File HTML (.html)
-          </button>
-          <button
             id="btn-share-app"
             type="button"
             class="px-5 py-2.5 rounded-full bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-xs shadow-xs"
@@ -484,7 +561,7 @@
           <div class="text-center mb-6">
             <span class="px-3 py-1 rounded-full bg-[#fce7f3] text-[#5d1c32] text-xs font-semibold border border-[#ffc2d1]">Surat Cinta 21st Birthday</span>
             <h3 id="letter-salutation-display" class="font-serif-elegant text-xl sm:text-2xl text-[#5d1c32] mt-3 font-bold"></h3>
-            <p class="font-romantic text-2xl text-[#a44a66]">Spesial 15 Agustus</p>
+            <p class="font-romantic text-2xl text-[#a44a66]">Spesial 19 Agustus</p>
           </div>
 
           <div id="letter-paragraphs-container" class="border-t border-b border-[#ffe1e9] py-6 my-4">
@@ -627,36 +704,16 @@
       </div>
     </div>
 
-    <!-- Export HTML Modal -->
-    <div id="export-html-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm p-4 flex items-center justify-center">
-      <div class="relative max-w-lg w-full bg-[#fffafb] rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#ffe1e9] text-[#5d1c32]">
-        <button id="btn-close-export" type="button" class="absolute top-4 right-4 p-2 text-[#8a5d6c]">✕</button>
-        <div class="text-center mb-4">
-          <span class="text-3xl block mb-2">📁✨</span>
-          <h3 class="font-serif-elegant text-2xl font-bold">Unduh Single-File HTML Murni</h3>
-          <p class="text-xs text-[#8a5d6c]">File mandiri siap pakai (HTML + CSS + JS) yang dapat langsung dibuka di browser tanpa server.</p>
-        </div>
-        <div class="space-y-3 pt-2">
-          <button
-            id="btn-download-html-file"
-            type="button"
-            class="w-full py-3 px-4 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95"
-          >
-            <span>Unduh File HTML (.html) 💾</span>
-          </button>
-          <a
-            href="/della_21st_birthday.html"
-            target="_blank"
-            rel="noreferrer"
-            class="w-full py-3 px-4 rounded-2xl bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-xs shadow-xs flex items-center justify-center gap-2 transition-all text-center block"
-          >
-            <span>Buka Versi Standalone di Tab Baru ↗️</span>
-          </a>
-        </div>
-      </div>
-    </div>
+    <!-- Confetti Library (Vendored, no build step) -->
+    <script src="assets/js/vendor/canvas-confetti.min.js"></script>
+
+    <!-- Romantic Splash Screen Controller -->
+    <script src="assets/js/splash.js"></script>
 
     <!-- Main JS entrypoint -->
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="assets/js/main.js"></script>
+
+    <?php endif; ?>
+
   </body>
 </html>

@@ -1,5 +1,3 @@
-import confetti from 'canvas-confetti';
-
 export function triggerRomanticConfetti() {
   confetti({
     particleCount: 55,
