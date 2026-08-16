@@ -5,15 +5,16 @@
 
   var progressBar = document.getElementById('splash-progress-bar');
   var btnSkip = document.getElementById('btn-skip-splash');
+  var startedAt = Date.now();
   var hidden = false;
-  var hideTimer = null;
+  var pollId = null;
 
   document.body.classList.add('splash-lock-scroll');
 
   function hideSplash() {
     if (hidden) return;
     hidden = true;
-    clearTimeout(hideTimer);
+    if (pollId) clearInterval(pollId);
 
     splash.classList.add('splash-hide');
     document.body.classList.remove('splash-lock-scroll');
@@ -40,9 +41,25 @@
     });
   });
 
-  hideTimer = setTimeout(hideSplash, SPLASH_DURATION);
+  // Poll elapsed wall-clock time instead of relying on a single setTimeout.
+  // A lone long-delay setTimeout can be delayed indefinitely by background
+  // tab throttling in some browsers; checking Date.now() on a short interval
+  // self-corrects the moment the tab is active again.
+  pollId = setInterval(function () {
+    if (Date.now() - startedAt >= SPLASH_DURATION) {
+      hideSplash();
+    }
+  }, 200);
 
   if (btnSkip) {
     btnSkip.addEventListener('click', hideSplash);
   }
+
+  // Extra safety net for the same throttling scenario: force a check the
+  // moment the tab regains focus, in case the interval itself got paused.
+  document.addEventListener('visibilitychange', function () {
+    if (!hidden && document.visibilityState === 'visible' && Date.now() - startedAt >= SPLASH_DURATION) {
+      hideSplash();
+    }
+  });
 })();

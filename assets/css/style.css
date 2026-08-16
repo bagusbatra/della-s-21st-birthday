@@ -63,3 +63,53 @@ body.splash-lock-scroll{overflow:hidden}
 .dev-mode-banner{position:fixed;top:0;left:0;right:0;z-index:200;background:#5d1c32;color:#fff;text-align:center;font-size:.7rem;letter-spacing:.03em;padding:.5rem .75rem;font-family:'Plus Jakarta Sans',sans-serif}
 .dev-mode-banner a{color:#ffc2d1;text-decoration:underline;margin-left:.4rem}
 .dev-mode-banner a:hover{color:#fff}
+
+/* Temporary dev-only skip link on the release gate (delete the <a> in
+   index.php before launch and this rule becomes unused/harmless). */
+.gate-dev-skip{display:inline-block;margin-top:1.5rem;font-size:.7rem;letter-spacing:.04em;color:#a44a66;text-decoration:underline;text-underline-offset:3px}
+.gate-dev-skip:hover{color:#5d1c32}
+
+/* ===== Birthday Candle Flame: lit flicker + wind blow-out ===== */
+@keyframes candleFlameFlicker{
+  0%,100%{transform:translateX(0) rotate(0deg) scaleY(1);opacity:1}
+  25%{transform:translateX(-0.6px) rotate(-3deg) scaleY(1.04)}
+  50%{transform:translateX(0.4px) rotate(2deg) scaleY(0.96);opacity:.92}
+  75%{transform:translateX(-0.3px) rotate(-1deg) scaleY(1.02)}
+}
+.candle-flame-flicker{
+  animation:candleFlameFlicker 1.6s ease-in-out infinite;
+  transform-origin:bottom center;
+}
+
+@keyframes candleBlowOut{
+  0%{transform:translateX(0) skewX(0deg) scaleY(1);opacity:1}
+  18%{transform:translateX(2px) skewX(-20deg) scaleY(1.15);opacity:1}
+  40%{transform:translateX(6px) skewX(-34deg) scaleY(.7);opacity:.8}
+  70%{transform:translateX(10px) skewX(-42deg) scaleY(.35);opacity:.35}
+  100%{transform:translateX(13px) skewX(-46deg) scaleY(.1);opacity:0}
+}
+.candle-flame-blowout{
+  animation:candleBlowOut .6s cubic-bezier(.4,0,.6,1) forwards;
+  transform-origin:bottom center;
+}
+
+@keyframes candleSmokePuff{
+  0%{transform:translate(-50%,0) scale(.35);opacity:0}
+  15%{opacity:.5}
+  100%{transform:translate(calc(-50% + 10px),-26px) scale(1.7);opacity:0}
+}
+.candle-smoke{
+  position:absolute;
+  bottom:100%;
+  left:50%;
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background:radial-gradient(circle,rgba(120,120,120,.55) 0%,rgba(120,120,120,0) 72%);
+  animation:candleSmokePuff .9s ease-out forwards;
+  pointer-events:none;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .candle-flame-flicker,.candle-flame-blowout,.candle-smoke{animation:none}
+}

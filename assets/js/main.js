@@ -1,7 +1,6 @@
 import { romanticSynth } from './audio.js';
 import { triggerRomanticConfetti, triggerFullscreenConfettiExplosion } from './confetti.js';
 import { initPetalCanvas } from './petals.js';
-import { initCountdown } from './countdown.js';
 import { initBirthdayCake } from './cake.js';
 import { initGallery } from './gallery.js';
 import { initSecretWishes } from './wishes.js';
@@ -11,22 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Falling Rose Petals
   initPetalCanvas();
 
-  // 2. Countdown Timer
-  initCountdown();
-
-  // 3. 21 Candles Birthday Cake
+  // 2. 21 Candles Birthday Cake
   initBirthdayCake();
 
-  // 4. Polaroid Photo Gallery
+  // 3. Polaroid Photo Gallery
   initGallery();
 
-  // 5. Secret Wishes Envelopes
+  // 4. Secret Wishes Envelopes
   initSecretWishes();
 
-  // 6. Love Letter Modal
+  // 5. Love Letter Modal
   const loveLetter = initLoveLetter();
 
-  // 7. Background Music Controller & Navbar Music Button
+  // 6. Background Music Controller & Navbar Music Button
   const btnNavMusic = document.getElementById('btn-nav-music');
   const musicFloatingBar = document.getElementById('music-floating-bar');
   const btnToggleFloatingMusic = document.getElementById('btn-toggle-floating-music');
@@ -99,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 8. Mobile Hamburger Menu
+  // 7. Mobile Hamburger Menu
   const btnMobileMenu = document.getElementById('btn-mobile-menu');
   const mobileNavMenu = document.getElementById('mobile-nav-menu');
 
@@ -115,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 9. Hero Confetti & Action Buttons
+  // 8. Hero Confetti & Action Buttons
   const btnHeroConfetti = document.getElementById('btn-hero-confetti');
   if (btnHeroConfetti) {
     btnHeroConfetti.addEventListener('click', () => {
@@ -124,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 10. Share & Copy Link Button
+  // 9. Share & Copy Link Button
   const btnShareApp = document.getElementById('btn-share-app');
   if (btnShareApp) {
     btnShareApp.addEventListener('click', async () => {
@@ -141,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 11. Back to Top Button
+  // 10. Back to Top Button
   const btnBackToTop = document.getElementById('btn-back-to-top');
   if (btnBackToTop) {
     btnBackToTop.addEventListener('click', () => {

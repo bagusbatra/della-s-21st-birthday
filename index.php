@@ -99,6 +99,13 @@ $showFullSite = $isReleased || $isDeveloperMode;
         </div>
 
         <p class="font-cormorant italic text-sm text-[#8a5d6c] mt-6">Sabar ya, sedikit lagi waktunya tiba&hellip;</p>
+
+        <!-- ====================================================================
+             TEMPORARY DEV BYPASS — remove this <a> block before going live.
+             It unlocks the full site early so development/testing doesn't
+             have to wait for the real date.
+        ==================================================================== -->
+        <a href="?dev=on" class="gate-dev-skip">Lewati (Mode Developer) →</a>
       </div>
     </div>
 
@@ -157,7 +164,6 @@ $showFullSite = $isReleased || $isDeveloperMode;
 
         <!-- Desktop Navigation Links -->
         <nav class="hidden md:flex items-center gap-6 text-xs font-medium text-[#8a5d6c]">
-          <a href="#countdown-section" class="hover:text-[#5d1c32] transition-colors">Hitung Mundur</a>
           <a href="#cake-section" class="hover:text-[#5d1c32] transition-colors">Tiup Lilin 21</a>
           <a href="#memories-section" class="hover:text-[#5d1c32] transition-colors">Kenangan Indah</a>
           <a href="#wishes-section" class="hover:text-[#5d1c32] transition-colors">Amplop Doa</a>
@@ -198,7 +204,6 @@ $showFullSite = $isReleased || $isDeveloperMode;
 
       <!-- Mobile Dropdown Menu -->
       <div id="mobile-nav-menu" class="hidden md:hidden px-4 pt-3 pb-4 border-t border-[#ffe1e9] mt-3 bg-[#fffafb]/95 space-y-2 text-xs font-medium text-[#5d1c32]">
-        <a href="#countdown-section" class="block py-2 px-3 rounded-lg hover:bg-[#fce7f3]">Hitung Mundur</a>
         <a href="#cake-section" class="block py-2 px-3 rounded-lg hover:bg-[#fce7f3]">Tiup 21 Lilin</a>
         <a href="#memories-section" class="block py-2 px-3 rounded-lg hover:bg-[#fce7f3]">Kenangan Indah</a>
         <a href="#wishes-section" class="block py-2 px-3 rounded-lg hover:bg-[#fce7f3]">Amplop Doa Teman</a>
@@ -253,119 +258,6 @@ $showFullSite = $isReleased || $isDeveloperMode;
           >
             <span>Letuskan Confetti Full Screen 🎆</span>
           </button>
-        </div>
-      </section>
-
-      <!-- Countdown Section -->
-      <section id="countdown-section" class="max-w-5xl mx-auto px-4">
-        <div class="bg-white/80 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-[#ffe1e9] shadow-xs text-center">
-          <div class="inline-block p-3 rounded-full bg-[#fce7f3] text-[#5d1c32] mb-3">
-            <span class="text-xl">⏳</span>
-          </div>
-          <p class="uppercase tracking-[0.3em] text-xs text-[#a44a66] font-medium mb-1">Birthday Countdown</p>
-          <h2 class="font-serif-elegant text-2xl sm:text-4xl text-[#5d1c32] mb-3">
-            Menuju Detik Bahagia Della Puspa Ardiati
-          </h2>
-
-          <div class="flex flex-wrap items-center justify-center gap-2 text-[#8a5d6c] text-xs sm:text-sm mb-6">
-            <span>Target Momen: <strong id="target-date-display" class="text-[#5d1c32]">19 Agustus 2026, 00:00 WIB</strong></span>
-            <button
-              id="btn-toggle-edit-countdown"
-              type="button"
-              class="text-xs text-[#a44a66] hover:text-[#5d1c32] underline underline-offset-2 ml-1 font-medium"
-            >
-              Ubah Target
-            </button>
-          </div>
-
-          <!-- Edit Target Date Form -->
-          <div id="countdown-edit-container" class="hidden mb-6 p-4 bg-white rounded-2xl border border-[#ffe1e9] max-w-md mx-auto">
-            <form id="form-edit-target-date" class="flex flex-wrap items-center justify-center gap-2 text-xs mb-3">
-              <input
-                id="input-target-date"
-                type="datetime-local"
-                class="bg-[#fffafb] border border-[#ffe1e9] rounded-lg px-3 py-1.5 text-[#5d1c32] focus:outline-none focus:border-[#a44a66]"
-              />
-              <button
-                type="submit"
-                class="bg-[#5d1c32] hover:bg-[#481426] text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
-              >
-                Simpan
-              </button>
-              <button
-                id="btn-cancel-edit-countdown"
-                type="button"
-                class="text-[#8a5d6c] hover:text-[#5d1c32] px-2 py-1"
-              >
-                Batal
-              </button>
-            </form>
-            <div class="pt-2 border-t border-[#ffe1e9] flex flex-wrap items-center justify-center gap-2">
-              <button
-                id="btn-test-countdown-5s"
-                type="button"
-                class="px-3 py-1 rounded-full bg-[#fce7f3] hover:bg-[#ffc2d1]/60 text-[#5d1c32] text-[11px] font-medium border border-[#ffc2d1]"
-              >
-                ⚡ Uji Hitung Mundur (5 Detik)
-              </button>
-              <button
-                id="btn-test-confetti-explosion"
-                type="button"
-                class="px-3 py-1 rounded-full bg-[#5d1c32] hover:bg-[#481426] text-white text-[11px] font-medium"
-              >
-                ✨ Uji Confetti Layar Penuh
-              </button>
-            </div>
-          </div>
-
-          <!-- Countdown Digits Grid -->
-          <div id="countdown-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 max-w-3xl mx-auto mb-6">
-            <div class="bg-[#fffafb] border border-[#ffe1e9] rounded-2xl p-4 shadow-xs">
-              <span id="cd-days" class="font-serif-elegant text-4xl sm:text-5xl text-[#5d1c32] block font-bold">00</span>
-              <span class="text-[11px] uppercase tracking-widest text-[#8a5d6c] font-medium">Hari</span>
-            </div>
-            <div class="bg-[#fffafb] border border-[#ffe1e9] rounded-2xl p-4 shadow-xs">
-              <span id="cd-hours" class="font-serif-elegant text-4xl sm:text-5xl text-[#5d1c32] block font-bold">00</span>
-              <span class="text-[11px] uppercase tracking-widest text-[#8a5d6c] font-medium">Jam</span>
-            </div>
-            <div class="bg-[#fffafb] border border-[#ffe1e9] rounded-2xl p-4 shadow-xs">
-              <span id="cd-minutes" class="font-serif-elegant text-4xl sm:text-5xl text-[#5d1c32] block font-bold">00</span>
-              <span class="text-[11px] uppercase tracking-widest text-[#8a5d6c] font-medium">Menit</span>
-            </div>
-            <div class="bg-[#fffafb] border border-[#ffe1e9] rounded-2xl p-4 shadow-xs">
-              <span id="cd-seconds" class="font-serif-elegant text-4xl sm:text-5xl text-[#a44a66] block font-bold animate-pulse">00</span>
-              <span class="text-[11px] uppercase tracking-widest text-[#8a5d6c] font-medium">Detik</span>
-            </div>
-          </div>
-
-          <!-- Zero Celebration Banner -->
-          <div id="countdown-passed-banner" class="hidden py-6 text-center">
-            <div class="inline-flex items-center justify-center p-4 bg-[#fce7f3] border border-[#ffc2d1] rounded-full mb-4 animate-bounce">
-              <span class="text-3xl">🎉</span>
-            </div>
-            <h3 class="font-serif-elegant text-2xl sm:text-3xl text-[#5d1c32] font-bold mb-2">
-              🎉 Selamat Ulang Tahun ke-21, Della Puspa Ardiati! 💖
-            </h3>
-            <p class="text-[#8a5d6c] text-sm sm:text-base max-w-xl mx-auto mb-6">
-              Hitungan mundur telah mencapai detik ke-0! Semoga usiamu yang ke-21 dipenuhi keberkahan, senyuman tanpa akhir, dan limpahan cinta terindah.
-            </p>
-            <div class="flex flex-wrap items-center justify-center gap-3">
-              <button
-                id="btn-countdown-celebrate-again"
-                type="button"
-                class="px-6 py-3 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-md flex items-center gap-2"
-              >
-                <span>Letuskan Confetti Full Screen Lagi! 🎆</span>
-              </button>
-              <button
-                id="btn-countdown-subtle-confetti"
-                type="button"
-                class="px-4 py-3 rounded-2xl bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-xs"
-              >
-                <span>Hujan Bunga Lembut 🌸</span>
-              </button>
-            </div>
-          </div>
         </div>
       </section>
 

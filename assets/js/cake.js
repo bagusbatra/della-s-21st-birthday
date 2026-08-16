@@ -14,7 +14,7 @@ export function initBirthdayCake() {
   const wishSentAlert = document.getElementById('wish-sent-alert');
   const inputWishText = document.getElementById('input-wish-text');
 
-  function renderCandles() {
+  function renderCandles(justBlownOut = new Set()) {
     if (!candlesContainer) return;
     candlesContainer.innerHTML = '';
 
@@ -24,12 +24,26 @@ export function initBirthdayCake() {
       candleBtn.className = 'group flex flex-col items-center cursor-pointer transition-transform hover:-translate-y-1 focus:outline-none';
       candleBtn.title = `Lilin ke-${index + 1} (${isLit ? 'Menyala' : 'Padam'})`;
 
+      const flameWrap = document.createElement('span');
+      flameWrap.className = 'relative flex items-center justify-center w-2.5 h-3.5';
+
+      const isBeingBlownOut = !isLit && justBlownOut.has(index);
+
       const flame = document.createElement('span');
-      flame.className = `w-2.5 h-3.5 rounded-full transition-all duration-300 ${
+      flame.className = `block w-2.5 h-3.5 rounded-full ${
         isLit
-          ? 'bg-gradient-to-t from-amber-500 via-yellow-300 to-white shadow-[0_0_8px_#f59e0b] opacity-100 scale-100 animate-pulse'
-          : 'bg-stone-300 opacity-0 scale-50'
+          ? 'bg-gradient-to-t from-amber-500 via-yellow-300 to-white shadow-[0_0_8px_#f59e0b] opacity-100 scale-100 candle-flame-flicker'
+          : isBeingBlownOut
+            ? 'bg-gradient-to-t from-amber-500 via-yellow-300 to-white shadow-[0_0_8px_#f59e0b] opacity-0 candle-flame-blowout'
+            : 'bg-stone-300 opacity-0 scale-50'
       }`;
+      flameWrap.appendChild(flame);
+
+      if (isBeingBlownOut) {
+        const smoke = document.createElement('span');
+        smoke.className = 'candle-smoke';
+        flameWrap.appendChild(smoke);
+      }
 
       const wick = document.createElement('span');
       wick.className = 'w-0.5 h-1.5 bg-stone-600';
@@ -42,14 +56,15 @@ export function initBirthdayCake() {
       }`;
       body.textContent = index + 1;
 
-      candleBtn.appendChild(flame);
+      candleBtn.appendChild(flameWrap);
       candleBtn.appendChild(wick);
       candleBtn.appendChild(body);
 
       candleBtn.addEventListener('click', () => {
+        const wasLit = candles[index];
         candles[index] = !candles[index];
         romanticSynth.playPianoTone(600 + index * 20, 0.2, 0.4, 'sine');
-        renderCandles();
+        renderCandles(wasLit && !candles[index] ? new Set([index]) : undefined);
 
         if (candles.every(c => !c)) {
           triggerFullscreenConfettiExplosion();
@@ -75,8 +90,14 @@ export function initBirthdayCake() {
 
   if (btnBlowAll) {
     btnBlowAll.addEventListener('click', () => {
+      const justBlownOut = new Set(
+        candles.reduce((acc, isLit, index) => {
+          if (isLit) acc.push(index);
+          return acc;
+        }, [])
+      );
       candles = Array(21).fill(false);
-      renderCandles();
+      renderCandles(justBlownOut);
       triggerFullscreenConfettiExplosion();
       romanticSynth.playCelebrationChime();
       setTimeout(() => {
