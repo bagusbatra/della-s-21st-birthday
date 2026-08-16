@@ -13,6 +13,8 @@ $pageTitle = $pageTitle ?? 'Admin';
 $activeMenu = $activeMenu ?? '';
 $admin = current_admin();
 
+$sidebarPendingCount = (int) get_pdo()->query("SELECT COUNT(*) FROM messages WHERE status = 'pending'")->fetchColumn();
+
 $menuItems = [
     ['key' => 'dashboard', 'label' => 'Dashboard', 'href' => 'index.php', 'icon' => '🏠'],
     ['key' => 'hero', 'label' => 'Hero Section', 'href' => 'hero.php', 'icon' => '💌'],
@@ -20,7 +22,7 @@ $menuItems = [
     ['key' => 'cake', 'label' => 'Cake Section', 'href' => 'cake.php', 'icon' => '🎂'],
     ['key' => 'gallery', 'label' => 'Gallery / Memories', 'href' => 'gallery/index.php', 'icon' => '🖼️'],
     ['key' => 'letter', 'label' => 'Love Letter', 'href' => 'letter.php', 'icon' => '✉️'],
-    ['key' => 'messages', 'label' => 'Wishes & Messages', 'href' => 'messages/index.php', 'icon' => '💬'],
+    ['key' => 'messages', 'label' => 'Wishes & Messages', 'href' => 'messages/index.php', 'icon' => '💬', 'badge' => $sidebarPendingCount],
     ['key' => 'settings', 'label' => 'Settings Admin', 'href' => 'settings.php', 'icon' => '⚙️'],
 ];
 ?>
@@ -44,7 +46,10 @@ $menuItems = [
           <li>
             <a href="<?= e($adminBase . $item['href']) ?>" class="<?= $activeMenu === $item['key'] ? 'active' : '' ?>">
               <span><?= $item['icon'] ?></span>
-              <span><?= e($item['label']) ?></span>
+              <span style="flex:1"><?= e($item['label']) ?></span>
+              <?php if (!empty($item['badge'])): ?>
+                <span class="admin-nav__badge"><?= (int) $item['badge'] ?></span>
+              <?php endif; ?>
             </a>
           </li>
         <?php endforeach; ?>

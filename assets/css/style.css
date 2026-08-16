@@ -113,3 +113,20 @@ body.splash-lock-scroll{overflow:hidden}
 @media (prefers-reduced-motion: reduce){
   .candle-flame-flicker,.candle-flame-blowout,.candle-smoke{animation:none}
 }
+
+/* ===== Halaman Publik pesan.php ===== */
+.pesan-page{
+  min-height:100vh;
+  background:radial-gradient(circle at 50% 0%,#fff5f8 0%,#fffafb 55%,#fffafb 100%);
+}
+
+/* Honeypot anti-spam: kosong bagi manusia, sering terisi otomatis oleh bot.
+   Disembunyikan tanpa display:none (beberapa bot sengaja skip field display:none). */
+.pesan-honeypot{
+  position:absolute;
+  left:-9999px;
+  top:-9999px;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}

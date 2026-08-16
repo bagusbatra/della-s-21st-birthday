@@ -403,6 +403,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
       </section>
 
       <!-- Secret Wishes Envelopes -->
+      <?php $messages = get_pdo()->query("SELECT * FROM messages WHERE status = 'approved' ORDER BY created_at DESC")->fetchAll(); ?>
       <section id="wishes-section" class="max-w-6xl mx-auto px-4">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
           <div class="text-center sm:text-left">
@@ -410,13 +411,12 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             <h2 class="font-serif-elegant text-3xl sm:text-4xl text-[#5d1c32]">Ucapan Kasih dari Teman & Keluarga</h2>
             <p class="text-[#8a5d6c] text-xs sm:text-sm mt-1">Buka amplop tertutup untuk membaca doa dan pesan penuh kasih untuk Della.</p>
           </div>
-          <button
-            id="btn-open-add-wish"
-            type="button"
+          <a
+            href="pesan.php"
             class="px-4 py-2.5 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs flex items-center gap-1.5 shadow-xs transition-all active:scale-95 shrink-0"
           >
             <span>+ Titip Doa / Ucapan</span>
-          </button>
+          </a>
         </div>
 
         <!-- Wish Filters -->
@@ -434,7 +434,63 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
 
         <!-- Wishes Grid -->
         <div id="wishes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Rendered by JS -->
+          <?php if (empty($messages)): ?>
+            <p class="text-center text-[#8a5d6c] text-sm col-span-full py-10">Belum ada ucapan yang tayang.</p>
+          <?php endif; ?>
+          <?php foreach ($messages as $msg): ?>
+            <?php $displayName = $msg['is_anonymous'] ? 'Sahabat Rahasia' : $msg['sender_name']; ?>
+            <div class="wish-card rounded-3xl p-5 sm:p-6 transition-all duration-300 border flex flex-col justify-between bg-gradient-to-br from-[#fffafb] to-[#fce7f3] border-[#ffc2d1] shadow-sm hover:shadow-md cursor-pointer" data-state="unopened">
+              <div class="wish-sealed-view">
+                <div class="text-center py-4">
+                  <div class="w-16 h-16 mx-auto rounded-full bg-[#5d1c32] text-[#ffc2d1] flex items-center justify-center text-2xl shadow-md mb-3 animate-pulse border-2 border-[#ffe1e9]">
+                    <?= e($msg['avatar_emoji'] ?: '💌') ?>
+                  </div>
+                  <span class="inline-block px-3 py-0.5 rounded-full bg-white text-[#5d1c32] text-[11px] font-semibold border border-[#ffe1e9] mb-1">
+                    <?= e($msg['role_relation'] ?: 'Sahabat') ?>
+                  </span>
+                  <h4 class="font-serif text-[#5d1c32] font-semibold text-base sm:text-lg mb-1">
+                    Dari: <?= e($displayName) ?>
+                  </h4>
+                  <p class="text-xs text-[#8a5d6c] italic mb-4">
+                    "<?= e($msg['hint'] ?: 'Pesan rahasia spesial untuk Della') ?>"
+                  </p>
+                  <button type="button" class="btn-open-envelope px-5 py-2 rounded-full bg-[#5d1c32] text-white text-xs font-semibold hover:bg-[#481426] transition-all shadow-xs inline-flex items-center gap-1.5">
+                    <span>Buka Segel Amplop ✉️</span>
+                  </button>
+                </div>
+                <div class="pt-2 text-center text-[10px] text-[#8a5d6c]">
+                  🕒 <?= e(format_relative_time($msg['created_at'])) ?>
+                </div>
+              </div>
+
+              <div class="wish-opened-view hidden">
+                <div>
+                  <div class="flex items-center justify-between pb-3 mb-3 border-b border-[#ffe1e9]">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-9 h-9 rounded-full bg-[#fce7f3] text-[#5d1c32] flex items-center justify-center text-lg border border-[#ffc2d1]">
+                        <?= e($msg['avatar_emoji'] ?: '🌸') ?>
+                      </span>
+                      <div>
+                        <h4 class="font-serif text-[#5d1c32] font-bold text-sm sm:text-base leading-tight"><?= e($displayName) ?></h4>
+                        <span class="text-[11px] text-[#a44a66] font-medium"><?= e($msg['role_relation'] ?: 'Sahabat') ?></span>
+                      </div>
+                    </div>
+                    <span class="text-xs text-[#8a5d6c]">💌 Terbuka</span>
+                  </div>
+                  <p class="font-cormorant italic text-base sm:text-lg text-[#5d1c32] leading-relaxed mb-4">
+                    "<?= e($msg['message']) ?>"
+                  </p>
+                </div>
+                <div class="pt-3 border-t border-[#ffe1e9]/60 flex items-center justify-between text-xs text-[#8a5d6c]">
+                  <span>🕒 <?= e(format_relative_time($msg['created_at'])) ?></span>
+                  <button class="btn-like-wish flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#fffafb] hover:bg-[#fce7f3] border border-[#ffe1e9] text-[#5d1c32] transition-colors">
+                    <span class="text-rose-500">❤️</span>
+                    <span class="like-count font-semibold text-xs"><?= (int) $msg['likes'] ?></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
         </div>
       </section>
 
@@ -480,6 +536,10 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     </footer>
 
     <!-- Love Letter Modal -->
+    <?php
+      $loveLetter = get_pdo()->query('SELECT * FROM love_letter WHERE id = 1')->fetch();
+      $loveLetterParagraphs = $loveLetter ? json_decode($loveLetter['paragraphs_json'], true) : [];
+    ?>
     <div id="love-letter-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm p-4 flex items-center justify-center">
       <div class="relative max-w-2xl w-full bg-[#fffafb] rounded-3xl p-6 sm:p-10 shadow-2xl border border-[#ffe1e9] max-h-[90vh] overflow-y-auto">
         <button id="btn-close-letter" type="button" class="absolute top-4 right-4 p-2 rounded-full text-[#8a5d6c] hover:text-[#5d1c32] hover:bg-[#fdf2f8]">
@@ -503,21 +563,14 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
         <div id="letter-opened-view" class="hidden">
           <div class="text-center mb-6">
             <span class="px-3 py-1 rounded-full bg-[#fce7f3] text-[#5d1c32] text-xs font-semibold border border-[#ffc2d1]">Surat Cinta 21st Birthday</span>
-            <h3 id="letter-salutation-display" class="font-serif-elegant text-xl sm:text-2xl text-[#5d1c32] mt-3 font-bold"></h3>
+            <h3 id="letter-salutation-display" class="font-serif-elegant text-xl sm:text-2xl text-[#5d1c32] mt-3 font-bold"><?= e($loveLetter['salutation'] ?? '') ?></h3>
             <p class="font-romantic text-2xl text-[#a44a66]">Spesial 19 Agustus</p>
           </div>
 
           <div id="letter-paragraphs-container" class="border-t border-b border-[#ffe1e9] py-6 my-4">
-            <!-- Paragraphs rendered by JS -->
-          </div>
-
-          <!-- Edit Form if toggled -->
-          <div id="letter-edit-form" class="hidden my-4">
-            <textarea id="textarea-letter-body" rows="8" class="w-full p-3 rounded-xl border border-[#ffe1e9] bg-white text-xs text-[#5d1c32] focus:outline-none focus:border-[#a44a66]"></textarea>
-            <div class="flex justify-end gap-2 mt-2">
-              <button id="btn-save-letter-edit" type="button" class="px-4 py-1.5 rounded-lg bg-[#5d1c32] text-white text-xs">Simpan</button>
-              <button id="btn-cancel-letter-edit" type="button" class="px-3 py-1.5 rounded-lg text-[#8a5d6c] text-xs">Batal</button>
-            </div>
+            <?php foreach ($loveLetterParagraphs as $paragraph): ?>
+              <p class="font-cormorant italic text-base sm:text-lg text-[#5d1c32] leading-relaxed mb-4"><?= e($paragraph) ?></p>
+            <?php endforeach; ?>
           </div>
 
           <div class="flex items-center justify-between pt-2">
@@ -525,8 +578,8 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
               Salin Surat Cinta 📋
             </button>
             <div class="text-right">
-              <p id="letter-closing-display" class="font-cormorant text-xs text-[#8a5d6c]"></p>
-              <p id="letter-sender-display" class="font-romantic text-2xl text-[#5d1c32]"></p>
+              <p id="letter-closing-display" class="font-cormorant text-xs text-[#8a5d6c]"><?= e($loveLetter['closing'] ?? '') ?></p>
+              <p id="letter-sender-display" class="font-romantic text-2xl text-[#5d1c32]"><?= e($loveLetter['sender'] ?? '') ?></p>
             </div>
           </div>
         </div>
@@ -578,40 +631,6 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     </div>
 
     <!-- Add Wish Modal -->
-    <div id="add-wish-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm p-4 flex items-center justify-center">
-      <div class="relative max-w-md w-full bg-[#fffafb] rounded-3xl p-6 shadow-2xl border border-[#ffe1e9]">
-        <button id="btn-close-add-wish" type="button" class="absolute top-4 right-4 p-2 text-[#8a5d6c]">✕</button>
-        <h3 class="font-serif-elegant text-xl text-[#5d1c32] font-bold mb-3">Titip Pesan & Doa untuk Della</h3>
-        <form id="form-add-wish" class="space-y-3 text-xs">
-          <div>
-            <label class="block text-[#8a5d6c] mb-1">Nama Pengirim</label>
-            <input id="input-wish-sender" type="text" required placeholder="Nama Anda" class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]" />
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[#8a5d6c] mb-1">Hubungan / Peran</label>
-              <input id="input-wish-role" type="text" placeholder="Sahabat / Bestie" class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]" />
-            </div>
-            <div>
-              <label class="block text-[#8a5d6c] mb-1">Emoji Cap</label>
-              <input id="input-wish-emoji" type="text" placeholder="🌸" class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]" />
-            </div>
-          </div>
-          <div>
-            <label class="block text-[#8a5d6c] mb-1">Petunjuk Rahasia (Hint)</label>
-            <input id="input-wish-hint" type="text" placeholder="Contoh: Pesan dari teman sebangkumu" class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]" />
-          </div>
-          <div>
-            <label class="block text-[#8a5d6c] mb-1">Isi Doa & Ucapan</label>
-            <textarea id="input-wish-message" rows="3" required placeholder="Tuliskan ucapan selamat ulang tahun ke-21..." class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]"></textarea>
-          </div>
-          <button type="submit" class="w-full py-2.5 rounded-xl bg-[#5d1c32] text-white font-medium">
-            Kirim Amplop Rahasia 💌
-          </button>
-        </form>
-      </div>
-    </div>
-
     <!-- Confetti Library (Vendored, no build step) -->
     <script src="assets/js/vendor/canvas-confetti.min.js"></script>
 

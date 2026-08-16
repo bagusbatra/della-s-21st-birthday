@@ -38,6 +38,32 @@ function get_client_ip(): string
     return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 }
 
+/** Format "2 jam lalu" / "Baru saja" dari string datetime MySQL. */
+function format_relative_time(string $datetime): string
+{
+    $timestamp = strtotime($datetime);
+    if ($timestamp === false) {
+        return $datetime;
+    }
+
+    $diff = time() - $timestamp;
+
+    if ($diff < 60) {
+        return 'Baru saja';
+    }
+    if ($diff < 3600) {
+        return floor($diff / 60) . ' menit lalu';
+    }
+    if ($diff < 86400) {
+        return floor($diff / 3600) . ' jam lalu';
+    }
+    if ($diff < 86400 * 7) {
+        return floor($diff / 86400) . ' hari lalu';
+    }
+
+    return format_indonesian_datetime($timestamp);
+}
+
 /** Format timestamp jadi "19 Agustus 2026, 00:00 WIB" tanpa perlu ext-intl. */
 function format_indonesian_datetime(int $timestamp): string
 {
