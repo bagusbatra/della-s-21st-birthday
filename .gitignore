@@ -1,0 +1,6 @@
+# Kredensial database lokal — jangan pernah ikut ke git
+config/config.local.php
+
+# Upload user (foto gallery via admin) — isi tidak perlu ikut versioning
+assets/uploads/*
+!assets/uploads/.gitkeep

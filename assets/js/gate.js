@@ -1,5 +1,7 @@
 (function () {
-  var target = new Date('2026-08-19T00:00:00+07:00').getTime();
+  var gateEl = document.getElementById('release-gate');
+  var releaseIso = (gateEl && gateEl.dataset.releaseIso) || '2026-08-19T00:00:00+07:00';
+  var target = new Date(releaseIso).getTime();
 
   var elDays = document.getElementById('gate-cd-days');
   var elHours = document.getElementById('gate-cd-hours');

@@ -1,0 +1,15 @@
+<?php
+/**
+ * Salin file ini menjadi "config.local.php" (di folder yang sama) dan
+ * sesuaikan nilainya. File "config.local.php" TIDAK ikut ke git (lihat
+ * .gitignore) supaya kredensial database tidak ter-upload ke GitHub.
+ *
+ * Default di bawah ini sudah cocok untuk instalasi Laragon standar
+ * (MySQL root tanpa password, database "della_birthday").
+ */
+
+define('DB_HOST', '127.0.0.1');
+define('DB_PORT', '3306');
+define('DB_NAME', 'della_birthday');
+define('DB_USER', 'root');
+define('DB_PASS', '');

@@ -6,11 +6,14 @@
  * Developer access (bypasses the gate while building/testing):
  *   index.php?dev=on   -> unlocks the full site early (stored in a cookie)
  *   index.php?dev=off  -> turns developer mode back off before launch
+ *
+ * Konten Hero/Cake/Gate & tanggal rilis sekarang dikelola lewat Admin Panel
+ * (tabel `settings` di MySQL) — lihat RENCANA-PENGEMBANGAN-ADMIN.md Iterasi 1 & 2.
  */
-date_default_timezone_set('Asia/Jakarta');
-
-define('DELLA_RELEASE_TIMESTAMP', strtotime('2026-08-19 00:00:00'));
-define('DELLA_DEV_COOKIE', 'della_dev_mode');
+require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/includes/settings.php';
+require_once __DIR__ . '/includes/helpers.php';
 
 if (isset($_GET['dev'])) {
     if ($_GET['dev'] === 'on') {
@@ -25,6 +28,8 @@ if (isset($_GET['dev'])) {
 $isDeveloperMode = isset($_COOKIE[DELLA_DEV_COOKIE]) && $_COOKIE[DELLA_DEV_COOKIE] === '1';
 $isReleased = time() >= DELLA_RELEASE_TIMESTAMP;
 $showFullSite = $isReleased || $isDeveloperMode;
+$releaseIso = date('c', DELLA_RELEASE_TIMESTAMP);
+$releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
 ?>
 <!doctype html>
 <html lang="id" class="scroll-smooth">
@@ -47,7 +52,7 @@ $showFullSite = $isReleased || $isDeveloperMode;
     <?php if ($isDeveloperMode && !$isReleased): ?>
     <!-- Developer Mode Banner (only visible pre-release, only to whoever unlocked ?dev=on) -->
     <div class="dev-mode-banner">
-      🔧 Mode Developer Aktif — situs asli masih terkunci sampai 19 Agustus 2026.
+      🔧 Mode Developer Aktif — situs asli masih terkunci sampai <?= e($releaseDisplay) ?>.
       <a href="?dev=off">Nonaktifkan mode developer</a>
     </div>
     <?php endif; ?>
@@ -57,7 +62,7 @@ $showFullSite = $isReleased || $isDeveloperMode;
     <!-- ============================= -->
     <!-- Release Gate (locked view)     -->
     <!-- ============================= -->
-    <div id="release-gate" class="release-gate">
+    <div id="release-gate" class="release-gate" data-release-iso="<?= e($releaseIso) ?>">
       <div class="splash-hearts" aria-hidden="true">
         <span class="splash-heart" style="left:4%; font-size:1.1rem; animation-duration:9.5s; animation-delay:.2s; --drift:22px;">💗</span>
         <span class="splash-heart" style="left:12%; font-size:1.6rem; animation-duration:12s; animation-delay:1.6s; --drift:-18px;">🌸</span>
@@ -77,7 +82,7 @@ $showFullSite = $isReleased || $isDeveloperMode;
         <div class="splash-ring">🔒</div>
         <p class="font-cormorant italic text-lg sm:text-xl text-[#8a5d6c]">Untuk Della Puspa Ardiati,</p>
         <h1 class="font-romantic text-4xl sm:text-6xl text-[#5d1c32] mt-1">Kejutan Spesial Sedang Disiapkan</h1>
-        <p class="font-serif-elegant text-lg sm:text-xl text-[#a44a66] font-semibold mt-3">Akan terbuka tepat pada 19 Agustus 2026 💗</p>
+        <p class="font-serif-elegant text-lg sm:text-xl text-[#a44a66] font-semibold mt-3">Akan terbuka tepat pada <?= e($releaseDisplay) ?> 💗</p>
 
         <div id="gate-countdown-grid" class="gate-countdown-grid">
           <div class="gate-countdown-box">
@@ -231,16 +236,16 @@ $showFullSite = $isReleased || $isDeveloperMode;
       <!-- Hero Section -->
       <section id="hero-section" class="min-h-[85vh] flex flex-col items-center justify-center text-center px-4 pt-12 pb-16 relative">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fce7f3] border border-[#ffc2d1] text-[#5d1c32] text-xs font-semibold uppercase tracking-wider mb-6 animate-soft-pulse">
-          <span>✨ 19 Agustus • 21st Special Milestone ✨</span>
+          <span><?= e(settings_get('hero_badge_text', '✨ 19 Agustus • 21st Special Milestone ✨')) ?></span>
         </div>
 
         <h1 class="font-serif-elegant text-4xl sm:text-6xl md:text-7xl font-normal text-[#5d1c32] max-w-4xl leading-tight mb-4">
-          Selamat Ulang Tahun ke-21,<br/>
-          <span class="font-romantic text-5xl sm:text-7xl md:text-8xl text-[#a44a66] block mt-2">Della Puspa Ardiati</span>
+          <?= e(settings_get('hero_title_line1', 'Selamat Ulang Tahun ke-21,')) ?><br/>
+          <span class="font-romantic text-5xl sm:text-7xl md:text-8xl text-[#a44a66] block mt-2"><?= e(settings_get('hero_title_line2', 'Della Puspa Ardiati')) ?></span>
         </h1>
 
         <p class="font-cormorant italic text-xl sm:text-2xl md:text-3xl text-[#8a5d6c] max-w-2xl mx-auto mb-8 leading-relaxed">
-          "Dua puluh satu tahun kebaikan, tawa yang menyejukkan jiwa, dan senyuman termanis yang selalu menghangatkan semesta."
+          "<?= e(settings_get('hero_quote', 'Dua puluh satu tahun kebaikan, tawa yang menyejukkan jiwa, dan senyuman termanis yang selalu menghangatkan semesta.')) ?>"
         </p>
 
         <div class="flex flex-wrap items-center justify-center gap-3.5 relative z-20">
@@ -285,14 +290,14 @@ $showFullSite = $isReleased || $isDeveloperMode;
           <!-- Birthday Cake Illustration -->
           <div class="max-w-md mx-auto relative flex flex-col items-center mb-8">
             <div class="w-48 sm:w-56 h-10 bg-[#ffe1e9] rounded-t-2xl border-t-2 border-[#ffc2d1] flex items-center justify-center shadow-xs">
-              <span class="font-romantic text-2xl text-[#5d1c32] font-bold">Della 21st</span>
+              <span class="font-romantic text-2xl text-[#5d1c32] font-bold"><?= e(settings_get('cake_banner_name', 'Della 21st')) ?></span>
             </div>
             <div class="w-64 sm:w-72 h-12 bg-[#fce7f3] border-t-2 border-[#ffc2d1] flex items-center justify-center shadow-xs">
-              <span class="font-serif-elegant text-[#5d1c32] text-xs tracking-widest uppercase font-semibold">Happy Birthday My Love</span>
+              <span class="font-serif-elegant text-[#5d1c32] text-xs tracking-widest uppercase font-semibold"><?= e(settings_get('cake_banner_tagline', 'Happy Birthday My Love')) ?></span>
             </div>
             <div class="w-80 sm:w-96 h-14 bg-white rounded-b-3xl border-t-2 border-[#ffc2d1] flex items-center justify-around px-4 shadow-sm">
-              <span class="text-xs text-[#5d1c32] font-medium">✨ 19 Agustus ✨</span>
-              <span class="text-xs text-[#5d1c32] font-medium">✨ Della Puspa Ardiati ✨</span>
+              <span class="text-xs text-[#5d1c32] font-medium"><?= e(settings_get('cake_banner_date', '✨ 19 Agustus ✨')) ?></span>
+              <span class="text-xs text-[#5d1c32] font-medium"><?= e(settings_get('cake_banner_recipient', '✨ Della Puspa Ardiati ✨')) ?></span>
             </div>
           </div>
 
@@ -324,6 +329,15 @@ $showFullSite = $isReleased || $isDeveloperMode;
       </section>
 
       <!-- Polaroid Photo Gallery -->
+      <?php
+        $memories = get_pdo()->query('SELECT * FROM memories WHERE is_published = 1 ORDER BY sort_order ASC, id ASC')->fetchAll();
+        $galleryTags = ['Semua'];
+        foreach ($memories as $m) {
+            if (!empty($m['tag']) && !in_array($m['tag'], $galleryTags, true)) {
+                $galleryTags[] = $m['tag'];
+            }
+        }
+      ?>
       <section id="memories-section" class="max-w-6xl mx-auto px-4">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
           <div class="text-center sm:text-left">
@@ -331,23 +345,60 @@ $showFullSite = $isReleased || $isDeveloperMode;
             <h2 class="font-serif-elegant text-3xl sm:text-4xl text-[#5d1c32]">Jejak Kasih & Senyuman Della</h2>
             <p class="text-[#8a5d6c] text-xs sm:text-sm mt-1">Koleksi foto berharga dalam perjalanan 21 tahun kehidupan yang mempesona.</p>
           </div>
-          <button
-            id="btn-open-add-memory"
-            type="button"
-            class="px-4 py-2.5 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs flex items-center gap-1.5 shadow-xs transition-all active:scale-95 shrink-0"
-          >
-            <span>+ Tambah Foto Kenangan</span>
-          </button>
         </div>
 
         <!-- Tag Filters -->
         <div id="gallery-tag-filters" class="flex flex-wrap items-center gap-2 mb-6">
-          <!-- Rendered by JS -->
+          <?php foreach ($galleryTags as $tag): ?>
+            <button
+              type="button"
+              class="gallery-tag-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= $tag === 'Semua' ? 'bg-[#5d1c32] text-white shadow-xs' : 'bg-white text-[#8a5d6c] border border-[#ffe1e9] hover:bg-[#fdf2f8]' ?>"
+              data-tag="<?= e($tag) ?>"
+            ><?= e($tag) ?></button>
+          <?php endforeach; ?>
         </div>
 
         <!-- Gallery Grid -->
         <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Rendered by JS -->
+          <?php if (empty($memories)): ?>
+            <p class="text-center text-[#8a5d6c] text-sm col-span-full py-10">Belum ada foto kenangan yang ditambahkan.</p>
+          <?php endif; ?>
+          <?php foreach ($memories as $m): ?>
+            <div class="gallery-card bg-white p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md border border-[#ffe1e9] transition-all duration-300 group flex flex-col justify-between" data-tag="<?= e($m['tag']) ?>">
+              <div>
+                <div
+                  class="gallery-card-image aspect-[4/5] rounded-xl overflow-hidden mb-3 bg-[#fdf2f8] relative cursor-pointer group-hover:opacity-95 transition-opacity"
+                  data-url="<?= e($m['image_url']) ?>"
+                  data-caption="<?= e($m['caption']) ?>"
+                  data-date="<?= e($m['event_date']) ?>"
+                  data-location="<?= e($m['location']) ?>"
+                  data-tag="<?= e($m['tag']) ?>"
+                  data-note="<?= e($m['note']) ?>"
+                  data-likes="<?= (int) $m['likes'] ?>"
+                >
+                  <img src="<?= e($m['image_url']) ?>" alt="<?= e($m['caption']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                  <span class="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-xs text-[10px] text-[#5d1c32] font-semibold shadow-xs">
+                    <?= e($m['tag'] ?: 'Kenangan') ?>
+                  </span>
+                </div>
+                <h3 class="font-serif text-[#5d1c32] font-semibold text-sm sm:text-base leading-snug line-clamp-2 mb-1">
+                  <?= e($m['caption']) ?>
+                </h3>
+                <p class="text-xs text-[#8a5d6c] line-clamp-2 mb-3">
+                  <?= e($m['note']) ?>
+                </p>
+              </div>
+              <div class="pt-2 border-t border-[#ffe1e9]/60 flex items-center justify-between text-xs text-[#8a5d6c]">
+                <span class="flex items-center gap-1 font-medium">
+                  📅 <?= e($m['event_date']) ?>
+                </span>
+                <button class="btn-like-memory flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-[#fce7f3] text-[#5d1c32] transition-colors">
+                  <span class="text-rose-500">❤️</span>
+                  <span class="like-count font-semibold text-xs"><?= (int) $m['likes'] ?></span>
+                </button>
+              </div>
+            </div>
+          <?php endforeach; ?>
         </div>
       </section>
 
@@ -523,41 +574,6 @@ $showFullSite = $isReleased || $isDeveloperMode;
         <div id="wish-sent-alert" class="hidden mt-4 p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-center text-xs font-medium">
           ✨ Harapanmu telah melayang dan didoakan semesta! Semoga terwujud indah!
         </div>
-      </div>
-    </div>
-
-    <!-- Add Memory Modal -->
-    <div id="add-memory-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm p-4 flex items-center justify-center">
-      <div class="relative max-w-md w-full bg-[#fffafb] rounded-3xl p-6 shadow-2xl border border-[#ffe1e9]">
-        <button id="btn-close-add-memory" type="button" class="absolute top-4 right-4 p-2 text-[#8a5d6c]">✕</button>
-        <h3 class="font-serif-elegant text-xl text-[#5d1c32] font-bold mb-3">Tambah Kenangan Foto Baru</h3>
-        <form id="form-add-memory" class="space-y-3 text-xs">
-          <div>
-            <label class="block text-[#8a5d6c] mb-1">URL Foto</label>
-            <input id="input-memory-url" type="url" required placeholder="https://..." class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]" />
-          </div>
-          <div>
-            <label class="block text-[#8a5d6c] mb-1">Judul / Caption Foto</label>
-            <input id="input-memory-caption" type="text" required placeholder="Contoh: Senyuman Manis Della" class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]" />
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[#8a5d6c] mb-1">Tanggal</label>
-              <input id="input-memory-date" type="text" placeholder="15 Agustus" class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]" />
-            </div>
-            <div>
-              <label class="block text-[#8a5d6c] mb-1">Tag Kategori</label>
-              <input id="input-memory-tag" type="text" placeholder="Momen Manis" class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]" />
-            </div>
-          </div>
-          <div>
-            <label class="block text-[#8a5d6c] mb-1">Catatan Kenangan</label>
-            <textarea id="input-memory-note" rows="2" placeholder="Ceritakan kisah manis di balik foto ini..." class="w-full p-2.5 rounded-xl border border-[#ffe1e9] bg-white text-[#5d1c32]"></textarea>
-          </div>
-          <button type="submit" class="w-full py-2.5 rounded-xl bg-[#5d1c32] text-white font-medium">
-            Simpan Kenangan Baru 📸
-          </button>
-        </form>
       </div>
     </div>
 
