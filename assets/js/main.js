@@ -5,6 +5,7 @@ import { initBirthdayCake } from './cake.js';
 import { initGallery } from './gallery.js';
 import { initSecretWishes } from './wishes.js';
 import { initLoveLetter } from './letter.js';
+import { icon } from './icons.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Falling Rose Petals
@@ -126,10 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnShareApp.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(window.location.href);
-        btnShareApp.innerHTML = '<span>Tautan Tersalin! ❤️</span>';
+        btnShareApp.innerHTML = `<span>Tautan Tersalin!</span> ${icon('heart', 'icon icon-sm')}`;
         triggerRomanticConfetti();
         setTimeout(() => {
-          btnShareApp.innerHTML = '<span>Bagikan Momen Ini 🔗</span>';
+          btnShareApp.innerHTML = `<span>Bagikan Momen Ini</span> ${icon('share-2', 'icon icon-sm')}`;
         }, 2500);
       } catch (e) {
         // ignore

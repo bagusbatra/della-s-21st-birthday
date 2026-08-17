@@ -54,13 +54,13 @@ include __DIR__ . '/includes/header.php';
     <div class="admin-form-group">
       <label for="cake_banner_date">Lapisan 3 — Kiri (tanggal)</label>
       <input class="admin-input" type="text" id="cake_banner_date" name="cake_banner_date" value="<?= e($cakeBannerDate) ?>" required>
-      <span class="hint">Contoh: ✨ 19 Agustus ✨</span>
+      <span class="hint">Contoh: 19 Agustus</span>
     </div>
 
     <div class="admin-form-group">
       <label for="cake_banner_recipient">Lapisan 3 — Kanan (nama penerima)</label>
       <input class="admin-input" type="text" id="cake_banner_recipient" name="cake_banner_recipient" value="<?= e($cakeBannerRecipient) ?>" required>
-      <span class="hint">Contoh: ✨ Della Puspa Ardiati ✨</span>
+      <span class="hint">Contoh: Della Puspa Ardiati</span>
     </div>
 
     <button type="submit" class="admin-btn">Simpan Perubahan</button>

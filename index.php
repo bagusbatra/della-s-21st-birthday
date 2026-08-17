@@ -14,6 +14,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/includes/settings.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/icons.php';
 
 if (isset($_GET['dev'])) {
     if ($_GET['dev'] === 'on') {
@@ -52,7 +53,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     <?php if ($isDeveloperMode && !$isReleased): ?>
     <!-- Developer Mode Banner (only visible pre-release, only to whoever unlocked ?dev=on) -->
     <div class="dev-mode-banner">
-      🔧 Mode Developer Aktif — situs asli masih terkunci sampai <?= e($releaseDisplay) ?>.
+      <?= icon('wrench', 'icon') ?> Mode Developer Aktif — situs asli masih terkunci sampai <?= e($releaseDisplay) ?>.
       <a href="?dev=off">Nonaktifkan mode developer</a>
     </div>
     <?php endif; ?>
@@ -79,10 +80,10 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
       </div>
 
       <div class="release-gate-content">
-        <div class="splash-ring">🔒</div>
+        <div class="splash-ring"><?= icon('lock', 'icon icon-lg') ?></div>
         <p class="font-cormorant italic text-lg sm:text-xl text-[#8a5d6c]">Untuk Della Puspa Ardiati,</p>
         <h1 class="font-romantic text-4xl sm:text-6xl text-[#5d1c32] mt-1">Kejutan Spesial Sedang Disiapkan</h1>
-        <p class="font-serif-elegant text-lg sm:text-xl text-[#a44a66] font-semibold mt-3">Akan terbuka tepat pada <?= e($releaseDisplay) ?> 💗</p>
+        <p class="font-serif-elegant text-lg sm:text-xl text-[#a44a66] font-semibold mt-3">Akan terbuka tepat pada <?= e($releaseDisplay) ?> <?= icon('heart', 'icon') ?></p>
 
         <div id="gate-countdown-grid" class="gate-countdown-grid">
           <div class="gate-countdown-box">
@@ -136,17 +137,17 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
       </div>
 
       <div class="splash-content">
-        <div class="splash-ring">❤️</div>
+        <div class="splash-ring"><?= icon('heart', 'icon icon-lg') ?></div>
         <p class="splash-line splash-line-1 font-cormorant italic text-lg sm:text-xl text-[#8a5d6c]">Untuk seseorang yang teristimewa,</p>
         <h1 class="splash-line splash-line-2 font-romantic text-5xl sm:text-7xl text-[#5d1c32]">Della Puspa Ardiati</h1>
-        <p class="splash-line splash-line-3 font-serif-elegant text-xl sm:text-2xl text-[#a44a66] font-semibold">Selamat Ulang Tahun ke-21 🎂</p>
+        <p class="splash-line splash-line-3 font-serif-elegant text-xl sm:text-2xl text-[#a44a66] font-semibold">Selamat Ulang Tahun ke-21 <?= icon('cake', 'icon') ?></p>
         <p class="splash-line splash-line-4 font-cormorant italic text-sm sm:text-base text-[#8a5d6c]">Sedang merangkai kenangan dan doa terindah untukmu&hellip;</p>
 
         <div class="splash-progress-track">
           <div id="splash-progress-bar"></div>
         </div>
 
-        <button id="btn-skip-splash" type="button" class="splash-skip">Lewati ✕</button>
+        <button id="btn-skip-splash" type="button" class="splash-skip">Lewati <?= icon('x', 'icon icon-sm') ?></button>
       </div>
     </div>
 
@@ -159,7 +160,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
         <!-- Logo -->
         <a href="#hero-section" class="flex items-center gap-2.5 group">
           <div class="w-8 h-8 rounded-full bg-[#5d1c32] text-[#ffc2d1] flex items-center justify-center shadow-xs border border-[#ffe1e9] group-hover:scale-105 transition-transform">
-            <span class="text-sm">❤️</span>
+            <?= icon('heart', 'icon') ?>
           </div>
           <div>
             <span class="font-serif-elegant font-bold text-[#5d1c32] text-sm sm:text-base leading-tight block">Della Puspa Ardiati</span>
@@ -183,7 +184,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             title="Putar Musik Latar Romantis"
             class="p-2 rounded-full border border-[#ffe1e9] bg-white/80 text-[#5d1c32] hover:bg-[#fdf2f8] transition-all active:scale-95"
           >
-            <span id="music-playing-indicator" class="text-sm block">🎵</span>
+            <span id="music-playing-indicator" class="text-sm block"><?= icon('music', 'icon') ?></span>
           </button>
 
           <!-- Love Letter Button -->
@@ -192,7 +193,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             type="button"
             class="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-xs border border-[#ffe1e9]/30 flex items-center gap-1.5 transition-all active:scale-95"
           >
-            <span>💌</span>
+            <span><?= icon('mail', 'icon') ?></span>
             <span class="hidden sm:inline">Surat Cinta</span>
           </button>
 
@@ -202,7 +203,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             type="button"
             class="p-2 rounded-xl border border-[#ffe1e9] text-[#5d1c32] md:hidden hover:bg-[#fce7f3]"
           >
-            ☰
+            <?= icon('menu', 'icon') ?>
           </button>
         </div>
       </div>
@@ -236,7 +237,9 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
       <!-- Hero Section -->
       <section id="hero-section" class="min-h-[85vh] flex flex-col items-center justify-center text-center px-4 pt-12 pb-16 relative">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fce7f3] border border-[#ffc2d1] text-[#5d1c32] text-xs font-semibold uppercase tracking-wider mb-6 animate-soft-pulse">
-          <span><?= e(settings_get('hero_badge_text', '✨ 19 Agustus • 21st Special Milestone ✨')) ?></span>
+          <?= icon('sparkles', 'icon icon-sm') ?>
+          <span><?= e(trim(settings_get('hero_badge_text', '19 Agustus • 21st Special Milestone'), " \u{2728}")) ?></span>
+          <?= icon('sparkles', 'icon icon-sm') ?>
         </div>
 
         <h1 class="font-serif-elegant text-4xl sm:text-6xl md:text-7xl font-normal text-[#5d1c32] max-w-4xl leading-tight mb-4">
@@ -254,14 +257,16 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             type="button"
             class="px-7 py-3.5 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-sm shadow-md border border-[#ffe1e9]/30 flex items-center gap-2 transition-all active:scale-95"
           >
-            <span>Buka Surat Cinta Rahasia 💌</span>
+            <span>Buka Surat Cinta Rahasia</span>
+            <?= icon('mail', 'icon') ?>
           </button>
           <button
             id="btn-hero-confetti"
             type="button"
             class="px-6 py-3.5 rounded-2xl bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-sm shadow-xs flex items-center gap-2 transition-all active:scale-95"
           >
-            <span>Letuskan Confetti Full Screen 🎆</span>
+            <span>Letuskan Confetti Full Screen</span>
+            <?= icon('party-popper', 'icon') ?>
           </button>
         </div>
       </section>
@@ -278,7 +283,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
           <!-- Candle Status Badge -->
           <div class="mb-6">
             <span id="candle-status-badge" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#fce7f3] text-[#5d1c32] border border-[#ffc2d1] text-xs font-semibold">
-              21 dari 21 Lilin Masih Menyala 🔥
+              21 dari 21 Lilin Masih Menyala <?= icon('flame', 'icon icon-sm') ?>
             </span>
           </div>
 
@@ -296,8 +301,16 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
               <span class="font-serif-elegant text-[#5d1c32] text-xs tracking-widest uppercase font-semibold"><?= e(settings_get('cake_banner_tagline', 'Happy Birthday My Love')) ?></span>
             </div>
             <div class="w-80 sm:w-96 h-14 bg-white rounded-b-3xl border-t-2 border-[#ffc2d1] flex items-center justify-around px-4 shadow-sm">
-              <span class="text-xs text-[#5d1c32] font-medium"><?= e(settings_get('cake_banner_date', '✨ 19 Agustus ✨')) ?></span>
-              <span class="text-xs text-[#5d1c32] font-medium"><?= e(settings_get('cake_banner_recipient', '✨ Della Puspa Ardiati ✨')) ?></span>
+              <span class="text-xs text-[#5d1c32] font-medium inline-flex items-center gap-1">
+                <?= icon('sparkles', 'icon icon-sm') ?>
+                <?= e(trim(settings_get('cake_banner_date', '19 Agustus'), " \u{2728}")) ?>
+                <?= icon('sparkles', 'icon icon-sm') ?>
+              </span>
+              <span class="text-xs text-[#5d1c32] font-medium inline-flex items-center gap-1">
+                <?= icon('sparkles', 'icon icon-sm') ?>
+                <?= e(trim(settings_get('cake_banner_recipient', 'Della Puspa Ardiati'), " \u{2728}")) ?>
+                <?= icon('sparkles', 'icon icon-sm') ?>
+              </span>
             </div>
           </div>
 
@@ -308,21 +321,24 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
               type="button"
               class="px-6 py-3 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-xs border border-[#ffe1e9]/30 flex items-center gap-2 transition-all active:scale-95"
             >
-              <span>Tiup Semua 21 Lilin Sekaligus 💨</span>
+              <span>Tiup Semua 21 Lilin Sekaligus</span>
+              <?= icon('wind', 'icon') ?>
             </button>
             <button
               id="btn-relight-candles"
               type="button"
               class="px-4 py-3 rounded-2xl bg-[#fce7f3] hover:bg-[#ffc2d1]/60 text-[#5d1c32] border border-[#ffc2d1] font-medium text-xs transition-all active:scale-95"
             >
-              <span>Nyalakan Lilin Kembali 🕯️</span>
+              <span>Nyalakan Lilin Kembali</span>
+              <?= icon('flame', 'icon') ?>
             </button>
             <button
               id="btn-open-make-wish"
               type="button"
               class="px-4 py-3 rounded-2xl bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-xs transition-all active:scale-95"
             >
-              <span>Tulis Harapan (Make a Wish) ✍️</span>
+              <span>Tulis Harapan (Make a Wish)</span>
+              <?= icon('pen-line', 'icon') ?>
             </button>
           </div>
         </div>
@@ -390,10 +406,10 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
               </div>
               <div class="pt-2 border-t border-[#ffe1e9]/60 flex items-center justify-between text-xs text-[#8a5d6c]">
                 <span class="flex items-center gap-1 font-medium">
-                  📅 <?= e($m['event_date']) ?>
+                  <?= icon('calendar', 'icon icon-sm') ?> <?= e($m['event_date']) ?>
                 </span>
                 <button class="btn-like-memory flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-[#fce7f3] text-[#5d1c32] transition-colors">
-                  <span class="text-rose-500">❤️</span>
+                  <span class="text-rose-500"><?= icon('heart', 'icon icon-sm') ?></span>
                   <span class="like-count font-semibold text-xs"><?= (int) $m['likes'] ?></span>
                 </button>
               </div>
@@ -415,7 +431,8 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             href="pesan.php"
             class="px-4 py-2.5 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs flex items-center gap-1.5 shadow-xs transition-all active:scale-95 shrink-0"
           >
-            <span>+ Titip Doa / Ucapan</span>
+            <?= icon('plus', 'icon icon-sm') ?>
+            <span>Titip Doa / Ucapan</span>
           </a>
         </div>
 
@@ -425,10 +442,10 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             Semua Amplop
           </button>
           <button id="filter-wishes-unopened" type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#8a5d6c] border border-[#ffe1e9] hover:bg-[#fdf2f8]">
-            Belum Terbuka ✉️
+            Belum Terbuka <?= icon('mail', 'icon icon-sm') ?>
           </button>
           <button id="filter-wishes-opened" type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#8a5d6c] border border-[#ffe1e9] hover:bg-[#fdf2f8]">
-            Sudah Terbuka 💌
+            Sudah Terbuka <?= icon('mail', 'icon icon-sm') ?>
           </button>
         </div>
 
@@ -455,11 +472,12 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
                     "<?= e($msg['hint'] ?: 'Pesan rahasia spesial untuk Della') ?>"
                   </p>
                   <button type="button" class="btn-open-envelope px-5 py-2 rounded-full bg-[#5d1c32] text-white text-xs font-semibold hover:bg-[#481426] transition-all shadow-xs inline-flex items-center gap-1.5">
-                    <span>Buka Segel Amplop ✉️</span>
+                    <span>Buka Segel Amplop</span>
+                    <?= icon('mail', 'icon icon-sm') ?>
                   </button>
                 </div>
                 <div class="pt-2 text-center text-[10px] text-[#8a5d6c]">
-                  🕒 <?= e(format_relative_time($msg['created_at'])) ?>
+                  <?= icon('clock', 'icon icon-sm') ?> <?= e(format_relative_time($msg['created_at'])) ?>
                 </div>
               </div>
 
@@ -475,16 +493,16 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
                         <span class="text-[11px] text-[#a44a66] font-medium"><?= e($msg['role_relation'] ?: 'Sahabat') ?></span>
                       </div>
                     </div>
-                    <span class="text-xs text-[#8a5d6c]">💌 Terbuka</span>
+                    <span class="text-xs text-[#8a5d6c] inline-flex items-center gap-1"><?= icon('mail', 'icon icon-sm') ?> Terbuka</span>
                   </div>
                   <p class="font-cormorant italic text-base sm:text-lg text-[#5d1c32] leading-relaxed mb-4">
                     "<?= e($msg['message']) ?>"
                   </p>
                 </div>
                 <div class="pt-3 border-t border-[#ffe1e9]/60 flex items-center justify-between text-xs text-[#8a5d6c]">
-                  <span>🕒 <?= e(format_relative_time($msg['created_at'])) ?></span>
+                  <span class="inline-flex items-center gap-1"><?= icon('clock', 'icon icon-sm') ?> <?= e(format_relative_time($msg['created_at'])) ?></span>
                   <button class="btn-like-wish flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#fffafb] hover:bg-[#fce7f3] border border-[#ffe1e9] text-[#5d1c32] transition-colors">
-                    <span class="text-rose-500">❤️</span>
+                    <span class="text-rose-500"><?= icon('heart', 'icon icon-sm') ?></span>
                     <span class="like-count font-semibold text-xs"><?= (int) $msg['likes'] ?></span>
                   </button>
                 </div>
@@ -500,7 +518,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     <footer class="bg-[#fffafb] pt-16 pb-12 px-4 border-t border-[#ffe1e9] text-center mt-20 relative z-20">
       <div class="max-w-4xl mx-auto space-y-4">
         <div class="w-10 h-10 mx-auto rounded-full bg-[#5d1c32] text-[#ffc2d1] flex items-center justify-center text-base">
-          ❤️
+          <?= icon('heart', 'icon') ?>
         </div>
         <p class="font-romantic text-3xl sm:text-4xl text-[#a44a66]">Happy 21st Birthday, Della Puspa Ardiati</p>
         <h3 class="font-serif-elegant text-lg sm:text-xl text-[#5d1c32]">Semoga Bahagia, Cinta, & Berkah Senantiasa Menyertaimu</h3>
@@ -512,16 +530,16 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
           <button
             data-action="open-letter"
             type="button"
-            class="px-5 py-2.5 rounded-full bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-xs"
+            class="px-5 py-2.5 rounded-full bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-xs inline-flex items-center gap-1.5"
           >
-            Baca Kembali Surat Cinta 💌
+            Baca Kembali Surat Cinta <?= icon('mail', 'icon icon-sm') ?>
           </button>
           <button
             id="btn-share-app"
             type="button"
-            class="px-5 py-2.5 rounded-full bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-xs shadow-xs"
+            class="px-5 py-2.5 rounded-full bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-xs shadow-xs inline-flex items-center gap-1.5"
           >
-            Bagikan Momen Ini 🔗
+            Bagikan Momen Ini <?= icon('share-2', 'icon icon-sm') ?>
           </button>
           <button
             id="btn-back-to-top"
@@ -529,7 +547,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             class="p-2.5 rounded-full bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] text-xs"
             title="Kembali ke Atas"
           >
-            ⬆️
+            <?= icon('arrow-up', 'icon') ?>
           </button>
         </div>
       </div>
@@ -543,19 +561,20 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     <div id="love-letter-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm p-4 flex items-center justify-center">
       <div class="relative max-w-2xl w-full bg-[#fffafb] rounded-3xl p-6 sm:p-10 shadow-2xl border border-[#ffe1e9] max-h-[90vh] overflow-y-auto">
         <button id="btn-close-letter" type="button" class="absolute top-4 right-4 p-2 rounded-full text-[#8a5d6c] hover:text-[#5d1c32] hover:bg-[#fdf2f8]">
-          ✕
+          <?= icon('x', 'icon') ?>
         </button>
 
         <!-- Sealed Envelope View -->
         <div id="letter-sealed-view" class="text-center py-8">
           <div class="w-20 h-20 mx-auto rounded-full bg-[#5d1c32] text-[#ffc2d1] flex items-center justify-center text-3xl shadow-lg border-2 border-[#ffe1e9] mb-4">
-            💌
+            <?= icon('mail', 'icon icon-lg') ?>
           </div>
           <span class="px-3.5 py-1 rounded-full bg-[#fce7f3] text-[#5d1c32] text-xs font-semibold border border-[#ffc2d1]">Surat Cinta Spesial 21st</span>
           <h3 class="font-serif-elegant text-2xl sm:text-3xl text-[#5d1c32] mt-3 font-semibold">Untuk Della Puspa Ardiati</h3>
           <p class="font-romantic text-2xl text-[#a44a66] mb-6">Segel Hati Khusus Hari Ulang Tahun</p>
-          <button id="btn-break-letter-seal" type="button" class="px-7 py-3 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-semibold text-xs shadow-md transition-all active:scale-95">
-            Buka Segel & Baca Surat Cinta ❤️
+          <button id="btn-break-letter-seal" type="button" class="px-7 py-3 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-semibold text-xs shadow-md transition-all active:scale-95 inline-flex items-center gap-2">
+            <span>Buka Segel & Baca Surat Cinta</span>
+            <?= icon('heart', 'icon icon-sm') ?>
           </button>
         </div>
 
@@ -574,8 +593,8 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
           </div>
 
           <div class="flex items-center justify-between pt-2">
-            <button id="btn-copy-letter" type="button" class="text-xs text-[#a44a66] hover:underline font-medium">
-              Salin Surat Cinta 📋
+            <button id="btn-copy-letter" type="button" class="text-xs text-[#a44a66] hover:underline font-medium inline-flex items-center gap-1">
+              Salin Surat Cinta <?= icon('copy', 'icon icon-sm') ?>
             </button>
             <div class="text-right">
               <p id="letter-closing-display" class="font-cormorant text-xs text-[#8a5d6c]"><?= e($loveLetter['closing'] ?? '') ?></p>
@@ -590,7 +609,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     <div id="lightbox-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md p-4 flex items-center justify-center">
       <div class="relative max-w-3xl w-full bg-[#fffafb] rounded-3xl p-6 shadow-2xl border border-[#ffe1e9] max-h-[90vh] overflow-y-auto">
         <button id="btn-close-lightbox" type="button" class="absolute top-4 right-4 p-2 rounded-full text-[#8a5d6c] hover:text-[#5d1c32]">
-          ✕
+          <?= icon('x', 'icon') ?>
         </button>
         <div class="aspect-[4/3] rounded-2xl overflow-hidden mb-4 bg-black/5">
           <img id="lightbox-img" src="" alt="" class="w-full h-full object-contain" />
@@ -602,7 +621,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             <p id="lightbox-date" class="text-xs text-[#8a5d6c]"></p>
           </div>
           <button id="lightbox-like-btn" type="button" class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#fce7f3] text-[#5d1c32] text-xs font-semibold">
-            ❤️ <span id="lightbox-like-count">0</span>
+            <?= icon('heart', 'icon icon-sm') ?> <span id="lightbox-like-count">0</span>
           </button>
         </div>
         <p id="lightbox-note" class="text-xs text-[#8a5d6c] mt-3 leading-relaxed"></p>
@@ -612,25 +631,25 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     <!-- Make a Wish Modal -->
     <div id="wish-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm p-4 flex items-center justify-center">
       <div class="relative max-w-lg w-full bg-[#fffafb] rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#ffe1e9]">
-        <button id="btn-close-wish" type="button" class="absolute top-4 right-4 p-2 text-[#8a5d6c]">✕</button>
+        <button id="btn-close-wish" type="button" class="absolute top-4 right-4 p-2 text-[#8a5d6c]"><?= icon('x', 'icon') ?></button>
         <div class="text-center mb-4">
-          <span class="text-3xl block mb-2">🎂✨</span>
+          <span class="w-12 h-12 mx-auto rounded-full bg-[#fce7f3] text-[#5d1c32] flex items-center justify-center mb-2"><?= icon('cake', 'icon icon-lg') ?></span>
           <h3 class="font-serif-elegant text-2xl text-[#5d1c32] font-bold">Harapan Ulang Tahun ke-21</h3>
           <p class="text-xs text-[#8a5d6c]">Bisikkan doa dan impian terindahmu ke semesta...</p>
         </div>
         <form id="form-make-wish" class="space-y-4">
           <textarea id="input-wish-text" rows="4" required placeholder="Tuliskan permohonan tulusmu di sini..." class="w-full p-3 rounded-2xl border border-[#ffe1e9] bg-white text-xs text-[#5d1c32] focus:outline-none focus:border-[#a44a66]"></textarea>
-          <button type="submit" class="w-full py-3 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-xs">
-            Terbangkan Harapan ke Langit 🕊️✨
+          <button type="submit" class="w-full py-3 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-xs inline-flex items-center justify-center gap-2">
+            <span>Terbangkan Harapan ke Langit</span>
+            <?= icon('feather', 'icon icon-sm') ?>
           </button>
         </form>
         <div id="wish-sent-alert" class="hidden mt-4 p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-center text-xs font-medium">
-          ✨ Harapanmu telah melayang dan didoakan semesta! Semoga terwujud indah!
+          Harapanmu telah melayang dan didoakan semesta! Semoga terwujud indah!
         </div>
       </div>
     </div>
 
-    <!-- Add Wish Modal -->
     <!-- Confetti Library (Vendored, no build step) -->
     <script src="assets/js/vendor/canvas-confetti.min.js"></script>
 

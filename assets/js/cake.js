@@ -1,5 +1,6 @@
 import { triggerFullscreenConfettiExplosion, triggerRomanticConfetti } from './confetti.js';
 import { romanticSynth } from './audio.js';
+import { icon } from './icons.js';
 
 export function initBirthdayCake() {
   let candles = Array(21).fill(true);
@@ -79,10 +80,10 @@ export function initBirthdayCake() {
     const activeCount = candles.filter(Boolean).length;
     if (candleStatusBadge) {
       if (activeCount === 0) {
-        candleStatusBadge.textContent = '✨ Semua 21 lilin telah ditiup! Harapanmu melayang ke semesta ✨';
+        candleStatusBadge.innerHTML = `${icon('sparkles', 'icon icon-sm')} Semua 21 lilin telah ditiup! Harapanmu melayang ke semesta ${icon('sparkles', 'icon icon-sm')}`;
         candleStatusBadge.className = 'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold';
       } else {
-        candleStatusBadge.textContent = `${activeCount} dari 21 Lilin Masih Menyala 🔥`;
+        candleStatusBadge.innerHTML = `${activeCount} dari 21 Lilin Masih Menyala ${icon('flame', 'icon icon-sm')}`;
         candleStatusBadge.className = 'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#fce7f3] text-[#5d1c32] border border-[#ffc2d1] text-xs font-semibold';
       }
     }

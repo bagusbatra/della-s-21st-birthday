@@ -116,8 +116,78 @@ body.splash-lock-scroll{overflow:hidden}
 
 /* ===== Halaman Publik pesan.php ===== */
 .pesan-page{
+  position:relative;
   min-height:100vh;
+  overflow:hidden;
   background:radial-gradient(circle at 50% 0%,#fff5f8 0%,#fffafb 55%,#fffafb 100%);
+}
+
+.pesan-content{
+  position:relative;
+  z-index:2;
+}
+
+.pesan-brand{
+  display:inline-flex;
+  align-items:center;
+  gap:.6rem;
+  text-decoration:none;
+  color:inherit;
+}
+.pesan-brand__icon{
+  width:2rem;
+  height:2rem;
+  border-radius:999px;
+  background:#5d1c32;
+  color:#ffc2d1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.85rem;
+  box-shadow:0 1px 2px rgba(93,28,50,.15);
+  flex-shrink:0;
+}
+.pesan-brand strong{
+  display:block;
+  font-family:'Playfair Display',serif;
+  font-weight:700;
+  font-size:.85rem;
+  color:#5d1c32;
+  line-height:1.2;
+}
+.pesan-brand small{
+  display:block;
+  font-size:.65rem;
+  color:#a44a66;
+  font-weight:600;
+}
+.pesan-brand:hover strong{ color:#481426; }
+
+.pesan-card{
+  opacity:0;
+  transform:translateY(16px);
+  animation:splashFadeUp .7s ease forwards;
+  animation-delay:.15s;
+}
+
+.pesan-ring{
+  width:64px;
+  height:64px;
+  margin:0 auto 1rem;
+  border-radius:999px;
+  background:#fff;
+  color:#a44a66;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.6rem;
+  box-shadow:0 0 0 0 rgba(164,74,102,.35);
+  animation:splashRingPulse 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .pesan-card{animation:none;opacity:1;transform:none}
+  .pesan-ring{animation:none}
 }
 
 /* Honeypot anti-spam: kosong bagi manusia, sering terisi otomatis oleh bot.
@@ -130,3 +200,14 @@ body.splash-lock-scroll{overflow:hidden}
   height:1px;
   overflow:hidden;
 }
+
+/* ===== Ikon SVG modern (gaya Lucide) menggantikan emoji sebagai ikon UI ===== */
+.icon{
+  width:1em;
+  height:1em;
+  display:inline-block;
+  vertical-align:-0.125em;
+  flex-shrink:0;
+}
+.icon-lg{ width:1.6em; height:1.6em; }
+.icon-sm{ width:.85em; height:.85em; }

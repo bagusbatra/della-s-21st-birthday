@@ -1,5 +1,6 @@
 import { triggerFullscreenConfettiExplosion } from './confetti.js';
 import { romanticSynth } from './audio.js';
+import { icon } from './icons.js';
 
 export function initLoveLetter() {
   const letterModal = document.getElementById('love-letter-modal');
@@ -53,9 +54,9 @@ export function initLoveLetter() {
 
       try {
         await navigator.clipboard.writeText(fullText);
-        btnCopyLetter.innerHTML = '<span>Tersalin! ❤️</span>';
+        btnCopyLetter.innerHTML = `<span>Tersalin!</span> ${icon('heart', 'icon icon-sm')}`;
         setTimeout(() => {
-          btnCopyLetter.innerHTML = '<span>Salin Surat Cinta 📋</span>';
+          btnCopyLetter.innerHTML = `Salin Surat Cinta ${icon('copy', 'icon icon-sm')}`;
         }, 2000);
       } catch (e) {
         // ignore

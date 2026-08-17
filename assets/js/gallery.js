@@ -1,4 +1,5 @@
 import { triggerHeartBurst } from './confetti.js';
+import { icon } from './icons.js';
 
 export function initGallery() {
   const galleryGrid = document.getElementById('gallery-grid');
@@ -45,7 +46,9 @@ export function initGallery() {
 
     if (lightboxImg) lightboxImg.src = imageEl.dataset.url;
     if (lightboxCaption) lightboxCaption.textContent = imageEl.dataset.caption;
-    if (lightboxDate) lightboxDate.textContent = `📅 ${imageEl.dataset.date} • 📍 ${imageEl.dataset.location || 'Spesial'}`;
+    if (lightboxDate) {
+      lightboxDate.innerHTML = `${icon('calendar', 'icon icon-sm')} ${imageEl.dataset.date} &bull; ${icon('map-pin', 'icon icon-sm')} ${imageEl.dataset.location || 'Spesial'}`;
+    }
     if (lightboxTag) lightboxTag.textContent = imageEl.dataset.tag || 'Momen Indah';
     if (lightboxNote) lightboxNote.textContent = imageEl.dataset.note || '';
     if (lightboxLikeCount) lightboxLikeCount.textContent = imageEl.dataset.likes || 0;

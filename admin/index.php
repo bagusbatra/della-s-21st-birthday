@@ -32,7 +32,7 @@ include __DIR__ . '/includes/header.php';
     <div class="admin-stat__label">Ucapan Menunggu Moderasi <?= $messagesPendingCount > 0 ? '→' : '' ?></div>
   </a>
   <div class="admin-stat">
-    <div class="admin-stat__value"><?= $isReleasedNow ? '🎉' : $daysUntilRelease ?></div>
+    <div class="admin-stat__value"><?= $isReleasedNow ? icon('sparkles', 'icon icon-lg') : $daysUntilRelease ?></div>
     <div class="admin-stat__label">
       <?= $isReleasedNow ? 'Situs Sudah Rilis!' : 'Hari Menuju Rilis (' . e(format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP)) . ')' ?>
     </div>
@@ -40,7 +40,7 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div class="admin-card">
-  <h2>Selamat datang, <?= e(current_admin()['display_name'] ?: current_admin()['username']) ?> 👋</h2>
+  <h2>Selamat datang, <?= e(current_admin()['display_name'] ?: current_admin()['username']) ?></h2>
   <p class="admin-card--muted">
     Semua konten utama <code>index.php</code> — Hero, Gate &amp; Countdown, Cake, Gallery,
     Love Letter, dan Wishes/Messages — sekarang dikelola dari sini dan tersimpan di

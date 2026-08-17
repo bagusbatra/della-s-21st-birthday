@@ -4,12 +4,11 @@
  * dengan opsi anonim. Setiap kiriman masuk sebagai 'pending' dan
  * baru tampil di index.php setelah disetujui lewat admin panel.
  *
- * Proteksi spam berlapis (Iterasi 7 + pengerasan Iterasi 9):
- *   1. Honeypot field    — field tersembunyi, jebakan bot yang mengisi semua field.
- *   2. Time-trap         — submit dalam <2 detik dari render dianggap bot.
- *   3. Captcha matematika — soal penjumlahan ringan, jawaban divalidasi di session (server-side).
- *   4. Rate-limit per IP  — maksimal 5 pesan/jam per alamat IP.
- *   5. Rate-limit sesi    — jeda minimal 20 detik antar submit dari browser yang sama.
+ * Proteksi spam berlapis, semuanya tidak terlihat/tidak mengganggu pengisi form:
+ *   1. Honeypot field   — field tersembunyi, jebakan bot yang mengisi semua field.
+ *   2. Time-trap        — submit dalam <2 detik dari render dianggap bot.
+ *   3. Rate-limit per IP — maksimal 5 pesan/jam per alamat IP.
+ *   4. Rate-limit sesi   — jeda minimal 20 detik antar submit dari browser yang sama.
  *
  * (Lihat RENCANA-PENGEMBANGAN-ADMIN.md Iterasi 7 & 9.)
  */
@@ -17,6 +16,7 @@ require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/includes/helpers.php';
 require_once __DIR__ . '/includes/session.php';
+require_once __DIR__ . '/includes/icons.php';
 
 ensure_session_started();
 
@@ -33,14 +33,8 @@ $formValues = [
     'message' => '',
 ];
 
-function pesan_new_captcha(): array
-{
-    $a = random_int(1, 9);
-    $b = random_int(1, 9);
-    $_SESSION['pesan_captcha_answer'] = $a + $b;
+if (!isset($_SESSION['pesan_form_rendered_at'])) {
     $_SESSION['pesan_form_rendered_at'] = time();
-
-    return [$a, $b];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -63,12 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('pesan.php?sent=1');
     }
 
-    // 3. Captcha matematika (jawaban benar tersimpan di session, bukan di form).
-    $captchaAnswer = $_POST['captcha_answer'] ?? '';
-    if (!is_numeric($captchaAnswer) || (int) $captchaAnswer !== (int) ($_SESSION['pesan_captcha_answer'] ?? null)) {
-        $errors[] = 'Jawaban captcha salah. Silakan coba lagi.';
-    }
-
     if ($formValues['message'] === '') {
         $errors[] = 'Pesan tidak boleh kosong.';
     } elseif (mb_strlen($formValues['message']) > 1000) {
@@ -83,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Nama maksimal 100 karakter.';
     }
 
-    // 5. Rate-limit sesi: jeda minimal 20 detik antar submit dari browser yang sama.
+    // 4. Rate-limit sesi: jeda minimal 20 detik antar submit dari browser yang sama.
     if (!$errors) {
         $lastSubmitAt = (int) ($_SESSION['pesan_last_submit_at'] ?? 0);
         if ($lastSubmitAt > 0 && (time() - $lastSubmitAt) < 20) {
@@ -91,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 4. Rate-limit per IP: maksimal 5 pesan/jam.
+    // 3. Rate-limit per IP: maksimal 5 pesan/jam.
     $ip = get_client_ip();
 
     if (!$errors) {
@@ -123,14 +111,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         $_SESSION['pesan_last_submit_at'] = time();
-        unset($_SESSION['pesan_captcha_answer'], $_SESSION['pesan_form_rendered_at']);
+        unset($_SESSION['pesan_form_rendered_at']);
 
         redirect('pesan.php?sent=1');
     }
-}
 
-// Selalu siapkan captcha baru untuk render form (baik kunjungan baru maupun retry setelah error).
-[$captchaA, $captchaB] = pesan_new_captcha();
+    // Retry setelah error: reset jam mulai supaya time-trap tidak salah tembak.
+    $_SESSION['pesan_form_rendered_at'] = time();
+}
 ?>
 <!doctype html>
 <html lang="id">
@@ -148,16 +136,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="bg-[#fffafb] text-[#5d1c32] antialiased min-h-screen font-sans">
   <div class="pesan-page">
-    <div class="max-w-2xl mx-auto px-4 py-12">
-      <a href="index.php" class="text-xs text-[#a44a66] hover:text-[#5d1c32] font-medium">← Kembali ke Beranda</a>
 
-      <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border border-[#ffe1e9] mt-4">
+    <!-- Kelopak bunga jatuh, animasi latar yang sama persis dengan index.php -->
+    <canvas id="petalCanvas" class="fixed inset-0 pointer-events-none z-0 w-full h-full"></canvas>
+
+    <div class="max-w-2xl mx-auto px-4 py-12 pesan-content">
+      <a href="index.php" class="pesan-brand">
+        <span class="pesan-brand__icon"><?= icon('heart', 'icon') ?></span>
+        <span>
+          <strong>Della Puspa Ardiati</strong>
+          <small>← Kembali ke Beranda</small>
+        </span>
+      </a>
+
+      <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border border-[#ffe1e9] mt-5 pesan-card">
         <?php if ($justSent): ?>
           <div class="text-center py-6">
-            <div class="w-16 h-16 mx-auto rounded-full bg-[#5d1c32] text-[#ffc2d1] flex items-center justify-center text-3xl shadow-lg border-2 border-[#ffe1e9] mb-4">
-              💌
-            </div>
-            <h1 class="font-serif-elegant text-2xl sm:text-3xl text-[#5d1c32] font-bold mb-2">Terima Kasih! 🌸</h1>
+            <div class="pesan-ring"><?= icon('mail', 'icon icon-lg') ?></div>
+            <h1 class="font-serif-elegant text-2xl sm:text-3xl text-[#5d1c32] font-bold mb-2">Terima Kasih! <?= icon('sparkles', 'icon icon-sm') ?></h1>
             <p class="font-cormorant italic text-base sm:text-lg text-[#8a5d6c] mb-6">
               Ucapanmu sudah diterima dan sedang menunggu untuk ditampilkan di halaman utama Della.
             </p>
@@ -172,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         <?php else: ?>
           <div class="text-center mb-6">
-            <span class="text-3xl block mb-2">💌🌸</span>
+            <div class="pesan-ring"><?= icon('mail', 'icon icon-lg') ?></div>
             <h1 class="font-serif-elegant text-2xl sm:text-3xl text-[#5d1c32] font-bold">Titip Doa &amp; Ucapan untuk Della</h1>
             <p class="font-romantic text-2xl text-[#a44a66]">Selamat Ulang Tahun ke-21</p>
             <p class="text-xs sm:text-sm text-[#8a5d6c] mt-2">
@@ -251,21 +247,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               ><?= e($formValues['message']) ?></textarea>
             </div>
 
-            <div>
-              <label class="block text-[#8a5d6c] mb-1">Biar tahu kamu bukan robot: <?= $captchaA ?> + <?= $captchaB ?> = ?</label>
-              <input
-                type="text" inputmode="numeric" name="captcha_answer" required autocomplete="off"
-                class="w-full p-3 rounded-2xl border border-[#ffe1e9] bg-white text-xs text-[#5d1c32] focus:outline-none focus:border-[#a44a66]"
-              >
-            </div>
-
             <button type="submit" class="w-full py-3 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-xs">
-              Kirim Amplop Rahasia 💌
+              Kirim Amplop Rahasia <?= icon('send', 'icon icon-sm') ?>
             </button>
           </form>
         <?php endif; ?>
       </div>
     </div>
   </div>
+
+  <script type="module">
+    import { initPetalCanvas } from './assets/js/petals.js';
+    initPetalCanvas();
+  </script>
 </body>
 </html>

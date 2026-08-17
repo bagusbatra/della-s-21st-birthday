@@ -39,7 +39,7 @@ include __DIR__ . '/includes/header.php';
     <div class="admin-form-group">
       <label for="hero_badge_text">Teks Badge (di atas judul)</label>
       <input class="admin-input" type="text" id="hero_badge_text" name="hero_badge_text" value="<?= e($heroBadgeText) ?>" required>
-      <span class="hint">Contoh: ✨ 19 Agustus • 21st Special Milestone ✨</span>
+      <span class="hint">Contoh: 19 Agustus • 21st Special Milestone</span>
     </div>
 
     <div class="admin-form-group">

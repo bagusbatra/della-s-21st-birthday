@@ -8,6 +8,8 @@
  *   $activeMenu  (string) key menu aktif, lihat array $menuItems di bawah
  */
 
+require_once __DIR__ . '/../../includes/icons.php';
+
 $adminBase = $adminBase ?? '';
 $pageTitle = $pageTitle ?? 'Admin';
 $activeMenu = $activeMenu ?? '';
@@ -16,14 +18,14 @@ $admin = current_admin();
 $sidebarPendingCount = (int) get_pdo()->query("SELECT COUNT(*) FROM messages WHERE status = 'pending'")->fetchColumn();
 
 $menuItems = [
-    ['key' => 'dashboard', 'label' => 'Dashboard', 'href' => 'index.php', 'icon' => '🏠'],
-    ['key' => 'hero', 'label' => 'Hero Section', 'href' => 'hero.php', 'icon' => '💌'],
-    ['key' => 'gate', 'label' => 'Gate & Countdown', 'href' => 'gate-settings.php', 'icon' => '⏳'],
-    ['key' => 'cake', 'label' => 'Cake Section', 'href' => 'cake.php', 'icon' => '🎂'],
-    ['key' => 'gallery', 'label' => 'Gallery / Memories', 'href' => 'gallery/index.php', 'icon' => '🖼️'],
-    ['key' => 'letter', 'label' => 'Love Letter', 'href' => 'letter.php', 'icon' => '✉️'],
-    ['key' => 'messages', 'label' => 'Wishes & Messages', 'href' => 'messages/index.php', 'icon' => '💬', 'badge' => $sidebarPendingCount],
-    ['key' => 'settings', 'label' => 'Settings Admin', 'href' => 'settings.php', 'icon' => '⚙️'],
+    ['key' => 'dashboard', 'label' => 'Dashboard', 'href' => 'index.php', 'icon' => 'home'],
+    ['key' => 'hero', 'label' => 'Hero Section', 'href' => 'hero.php', 'icon' => 'mail'],
+    ['key' => 'gate', 'label' => 'Gate & Countdown', 'href' => 'gate-settings.php', 'icon' => 'hourglass'],
+    ['key' => 'cake', 'label' => 'Cake Section', 'href' => 'cake.php', 'icon' => 'cake'],
+    ['key' => 'gallery', 'label' => 'Gallery / Memories', 'href' => 'gallery/index.php', 'icon' => 'image'],
+    ['key' => 'letter', 'label' => 'Love Letter', 'href' => 'letter.php', 'icon' => 'heart'],
+    ['key' => 'messages', 'label' => 'Wishes & Messages', 'href' => 'messages/index.php', 'icon' => 'message-circle', 'badge' => $sidebarPendingCount],
+    ['key' => 'settings', 'label' => 'Settings Admin', 'href' => 'settings.php', 'icon' => 'settings'],
 ];
 ?>
 <!doctype html>
@@ -45,7 +47,7 @@ $menuItems = [
         <?php foreach ($menuItems as $item): ?>
           <li>
             <a href="<?= e($adminBase . $item['href']) ?>" class="<?= $activeMenu === $item['key'] ? 'active' : '' ?>">
-              <span><?= $item['icon'] ?></span>
+              <span><?= icon($item['icon'], 'icon') ?></span>
               <span style="flex:1"><?= e($item['label']) ?></span>
               <?php if (!empty($item['badge'])): ?>
                 <span class="admin-nav__badge"><?= (int) $item['badge'] ?></span>
@@ -60,7 +62,7 @@ $menuItems = [
       <header class="admin-topbar">
         <h1><?= e($pageTitle) ?></h1>
         <div class="admin-topbar__user">
-          <span>👤 <?= e($admin['display_name'] ?: $admin['username']) ?></span>
+          <span><?= icon('user', 'icon icon-sm') ?> <?= e($admin['display_name'] ?: $admin['username']) ?></span>
           <a href="<?= e($adminBase) ?>logout.php">Keluar</a>
         </div>
       </header>

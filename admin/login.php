@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/icons.php';
 
 if (is_admin_logged_in()) {
     redirect('index.php');
@@ -49,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="admin-body">
   <div class="admin-login-page">
     <div class="admin-login-card">
-      <h1>💌 Admin Panel</h1>
+      <h1><?= icon('lock', 'icon') ?> Admin Panel</h1>
       <p class="sub">Della's 21st Birthday</p>
 
       <?php if ($error): ?>

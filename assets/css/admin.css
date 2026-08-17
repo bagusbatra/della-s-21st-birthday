@@ -244,3 +244,17 @@ a:hover { text-decoration: underline; }
 .admin-login-card .admin-btn { width: 100%; justify-content: center; padding: 10px; }
 
 .admin-empty-state { text-align: center; padding: 40px 20px; color: var(--admin-text-muted); }
+
+/* ===== Ikon SVG modern (gaya Lucide) menggantikan emoji ===== */
+.icon{
+  width:1em;
+  height:1em;
+  display:inline-block;
+  vertical-align:-0.125em;
+  flex-shrink:0;
+}
+.icon-lg{ width:1.6em; height:1.6em; }
+.icon-sm{ width:.85em; height:.85em; }
+
+.admin-nav a .icon{ width:16px; height:16px; }
+.admin-btn .icon{ width:14px; height:14px; }
