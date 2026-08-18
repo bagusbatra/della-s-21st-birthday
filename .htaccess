@@ -1,0 +1,23 @@
+# =====================================================================
+# URL tanpa akhiran .php
+# =====================================================================
+# Butuh mod_rewrite aktif & AllowOverride All di vhost (default di Laragon).
+
+RewriteEngine On
+
+# 1) Kalau ada yang buka URL dengan .php secara eksplisit, redirect 301
+#    ke versi tanpa .php (URL kanonik, hindari duplikat index).
+RewriteCond %{THE_REQUEST} \s/+(.+)\.php[\s?] [NC]
+RewriteRule ^ /%1 [R=301,L]
+
+# 2) Kalau file "<path>.php" ada, layani file itu untuk request tanpa
+#    ekstensi (berlaku di semua folder: admin/hero, admin/gallery/form, pesan, dst).
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# =====================================================================
+# Keamanan tambahan: folder ini tidak boleh diakses langsung dari browser
+# (hanya di-include lewat PHP), sekarang jadi relevan karena situs akan
+# di-hosting, bukan cuma di localhost.
+# =====================================================================
+RewriteRule ^(config|includes|database)/ - [F,L]

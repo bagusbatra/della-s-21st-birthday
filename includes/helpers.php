@@ -64,6 +64,48 @@ function format_relative_time(string $datetime): string
     return format_indonesian_datetime($timestamp);
 }
 
+/**
+ * Validasi & pindahkan file upload gambar ke assets/uploads/. Dipakai admin
+ * (gallery, pesan manual) & halaman publik (pesan.php, foto amplop opsional).
+ * Butuh konstanta DELLA_UPLOAD_DIR & DELLA_UPLOAD_URL (config/config.php).
+ *
+ * Return ['url' => string|null, 'error' => string|null]
+ */
+function process_image_upload(array $file, int $maxBytes = 5 * 1024 * 1024): array
+{
+    $allowedExt = ['jpg', 'jpeg', 'png', 'webp'];
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['url' => null, 'error' => 'Upload gagal (kode error: ' . $file['error'] . ').'];
+    }
+
+    if ($file['size'] > $maxBytes) {
+        return ['url' => null, 'error' => 'Ukuran file maksimal ' . round($maxBytes / 1024 / 1024, 1) . 'MB.'];
+    }
+
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowedExt, true)) {
+        return ['url' => null, 'error' => 'Format file harus jpg, jpeg, png, atau webp.'];
+    }
+
+    if (@getimagesize($file['tmp_name']) === false) {
+        return ['url' => null, 'error' => 'File yang diupload bukan gambar yang valid.'];
+    }
+
+    if (!is_dir(DELLA_UPLOAD_DIR)) {
+        mkdir(DELLA_UPLOAD_DIR, 0755, true);
+    }
+
+    $filename = bin2hex(random_bytes(12)) . '.' . $ext;
+    $destination = DELLA_UPLOAD_DIR . '/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        return ['url' => null, 'error' => 'Gagal menyimpan file ke server.'];
+    }
+
+    return ['url' => DELLA_UPLOAD_URL . '/' . $filename, 'error' => null];
+}
+
 /** Format timestamp jadi "19 Agustus 2026, 00:00 WIB" tanpa perlu ext-intl. */
 function format_indonesian_datetime(int $timestamp): string
 {

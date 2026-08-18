@@ -23,77 +23,56 @@ document.addEventListener('DOMContentLoaded', () => {
   // 5. Love Letter Modal
   const loveLetter = initLoveLetter();
 
-  // 6. Background Music Controller & Navbar Music Button
+  // 6. Background Music — autoplay + loop the real audio file, with a
+  // fallback that resumes playback on the first user interaction if the
+  // browser's autoplay policy blocked the initial attempt.
+  const bgMusic = document.getElementById('bg-music');
   const btnNavMusic = document.getElementById('btn-nav-music');
-  const musicFloatingBar = document.getElementById('music-floating-bar');
   const btnToggleFloatingMusic = document.getElementById('btn-toggle-floating-music');
-  const btnNextTrack = document.getElementById('btn-next-track');
-  const btnPrevTrack = document.getElementById('btn-prev-track');
-  const currentTrackTitle = document.getElementById('current-track-title');
-  const currentTrackMood = document.getElementById('current-track-mood');
-  const volumeSlider = document.getElementById('volume-slider');
   const musicPlayingIcon = document.getElementById('music-playing-indicator');
 
   function updateMusicUI(isPlaying) {
     if (btnNavMusic) {
-      if (isPlaying) {
-        btnNavMusic.className = 'p-2 rounded-full border border-[#ffe1e9] bg-[#5d1c32] text-white shadow-xs transition-all active:scale-95';
-      } else {
-        btnNavMusic.className = 'p-2 rounded-full border border-[#ffe1e9] bg-white/80 text-[#5d1c32] hover:bg-[#fdf2f8] transition-all active:scale-95';
-      }
+      btnNavMusic.className = isPlaying
+        ? 'p-2 rounded-full border border-[#ffe1e9] bg-[#5d1c32] text-white shadow-xs transition-all active:scale-95'
+        : 'p-2 rounded-full border border-[#ffe1e9] bg-white/80 text-[#5d1c32] hover:bg-[#fdf2f8] transition-all active:scale-95';
     }
 
     if (btnToggleFloatingMusic) {
-      btnToggleFloatingMusic.textContent = isPlaying ? '⏸️' : '▶️';
+      btnToggleFloatingMusic.innerHTML = icon(isPlaying ? 'pause' : 'play', 'icon icon-sm');
     }
 
     if (musicPlayingIcon) {
       musicPlayingIcon.className = isPlaying ? 'animate-spin' : '';
     }
-
-    const currentTrack = romanticSynth.getCurrentTrack();
-    if (currentTrackTitle && currentTrack) {
-      currentTrackTitle.textContent = currentTrack.title;
-    }
-    if (currentTrackMood && currentTrack) {
-      currentTrackMood.textContent = currentTrack.mood;
-    }
   }
 
-  romanticSynth.subscribe((isPlaying) => {
-    updateMusicUI(isPlaying);
-  });
+  if (bgMusic) {
+    bgMusic.volume = 0.5;
 
-  if (btnNavMusic) {
-    btnNavMusic.addEventListener('click', () => {
-      romanticSynth.toggle();
-    });
-  }
+    const resumeOnInteraction = () => {
+      bgMusic.play().catch(() => {});
+    };
 
-  if (btnToggleFloatingMusic) {
-    btnToggleFloatingMusic.addEventListener('click', () => {
-      romanticSynth.toggle();
+    bgMusic.play().catch(() => {
+      ['click', 'touchstart', 'keydown'].forEach((evt) => {
+        document.addEventListener(evt, resumeOnInteraction, { once: true });
+      });
     });
-  }
 
-  if (btnNextTrack) {
-    btnNextTrack.addEventListener('click', () => {
-      romanticSynth.setTrack(romanticSynth.currentTrackIndex + 1);
-      updateMusicUI(romanticSynth.getIsPlaying());
-    });
-  }
+    bgMusic.addEventListener('play', () => updateMusicUI(true));
+    bgMusic.addEventListener('pause', () => updateMusicUI(false));
 
-  if (btnPrevTrack) {
-    btnPrevTrack.addEventListener('click', () => {
-      romanticSynth.setTrack(romanticSynth.currentTrackIndex - 1);
-      updateMusicUI(romanticSynth.getIsPlaying());
-    });
-  }
+    const toggleMusic = () => {
+      if (bgMusic.paused) {
+        bgMusic.play().catch(() => {});
+      } else {
+        bgMusic.pause();
+      }
+    };
 
-  if (volumeSlider) {
-    volumeSlider.addEventListener('input', (e) => {
-      romanticSynth.setVolume(parseFloat(e.target.value));
-    });
+    if (btnNavMusic) btnNavMusic.addEventListener('click', toggleMusic);
+    if (btnToggleFloatingMusic) btnToggleFloatingMusic.addEventListener('click', toggleMusic);
   }
 
   // 7. Mobile Hamburger Menu
@@ -144,6 +123,23 @@ document.addEventListener('DOMContentLoaded', () => {
     btnBackToTop.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+  }
+
+  // 11. Dev Mode Banner spacing — the banner wraps to 2 lines on narrow
+  // screens, so its height is measured live instead of assumed fixed.
+  const devBanner = document.querySelector('.dev-mode-banner');
+  const mainHeader = document.getElementById('main-header');
+  const mainContent = document.querySelector('main');
+  if (devBanner && mainHeader) {
+    const adjustForDevBanner = () => {
+      const bannerHeight = devBanner.offsetHeight;
+      mainHeader.style.top = `${bannerHeight}px`;
+      if (mainContent) {
+        mainContent.style.paddingTop = `${bannerHeight + mainHeader.offsetHeight}px`;
+      }
+    };
+    adjustForDevBanner();
+    window.addEventListener('resize', adjustForDevBanner);
   }
 
 });

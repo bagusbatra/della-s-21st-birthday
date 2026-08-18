@@ -6,7 +6,6 @@ require_once __DIR__ . '/../../config/db.php';
 
 $memories = get_pdo()->query('SELECT * FROM memories ORDER BY sort_order ASC, id ASC')->fetchAll();
 
-$adminBase = '../';
 $pageTitle = 'Gallery / Memories';
 $activeMenu = 'gallery';
 include __DIR__ . '/../includes/header.php';
@@ -15,7 +14,7 @@ include __DIR__ . '/../includes/header.php';
 <div class="admin-card">
   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px">
     <h2 style="margin:0">Foto Kenangan (<?= count($memories) ?>)</h2>
-    <a href="form.php" class="admin-btn">+ Tambah Foto Baru</a>
+    <a href="form" class="admin-btn">+ Tambah Foto Baru</a>
   </div>
 
   <?php if (empty($memories)): ?>
@@ -55,13 +54,13 @@ include __DIR__ . '/../includes/header.php';
                 <?php endif; ?>
               </td>
               <td>
-                <form method="post" action="actions.php" style="display:inline">
+                <form method="post" action="actions" style="display:inline">
                   <?= csrf_field() ?>
                   <input type="hidden" name="id" value="<?= (int) $m['id'] ?>">
                   <input type="hidden" name="action" value="move_up">
                   <button type="submit" class="admin-btn admin-btn--secondary admin-btn--sm" <?= $i === 0 ? 'disabled' : '' ?>>↑</button>
                 </form>
-                <form method="post" action="actions.php" style="display:inline">
+                <form method="post" action="actions" style="display:inline">
                   <?= csrf_field() ?>
                   <input type="hidden" name="id" value="<?= (int) $m['id'] ?>">
                   <input type="hidden" name="action" value="move_down">
@@ -69,9 +68,9 @@ include __DIR__ . '/../includes/header.php';
                 </form>
               </td>
               <td>
-                <a href="form.php?id=<?= (int) $m['id'] ?>" class="admin-btn admin-btn--secondary admin-btn--sm">Edit</a>
+                <a href="form?id=<?= (int) $m['id'] ?>" class="admin-btn admin-btn--secondary admin-btn--sm">Edit</a>
 
-                <form method="post" action="actions.php" style="display:inline">
+                <form method="post" action="actions" style="display:inline">
                   <?= csrf_field() ?>
                   <input type="hidden" name="id" value="<?= (int) $m['id'] ?>">
                   <input type="hidden" name="action" value="toggle_publish">
@@ -80,7 +79,7 @@ include __DIR__ . '/../includes/header.php';
                   </button>
                 </form>
 
-                <form method="post" action="actions.php" style="display:inline" onsubmit="return confirm('Hapus foto ini? Tindakan ini tidak bisa dibatalkan.');">
+                <form method="post" action="actions" style="display:inline" onsubmit="return confirm('Hapus foto ini? Tindakan ini tidak bisa dibatalkan.');">
                   <?= csrf_field() ?>
                   <input type="hidden" name="id" value="<?= (int) $m['id'] ?>">
                   <input type="hidden" name="action" value="delete">

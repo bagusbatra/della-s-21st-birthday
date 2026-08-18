@@ -27,7 +27,7 @@ include __DIR__ . '/includes/header.php';
     <div class="admin-stat__value"><?= $messagesApprovedCount ?></div>
     <div class="admin-stat__label">Ucapan Tayang (Approved)</div>
   </div>
-  <a href="messages/index.php?status=pending" class="admin-stat" style="display:block; text-decoration:none; color:inherit">
+  <a href="messages/?status=pending" class="admin-stat" style="display:block; text-decoration:none; color:inherit">
     <div class="admin-stat__value" style="<?= $messagesPendingCount > 0 ? 'color:var(--admin-warning)' : '' ?>"><?= $messagesPendingCount ?></div>
     <div class="admin-stat__label">Ucapan Menunggu Moderasi <?= $messagesPendingCount > 0 ? '→' : '' ?></div>
   </a>
@@ -48,12 +48,12 @@ include __DIR__ . '/includes/header.php';
     <code>RENCANA-PENGEMBANGAN-ADMIN.md</code>.
   </p>
   <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px">
-    <a href="hero.php" class="admin-btn admin-btn--secondary admin-btn--sm">Edit Hero</a>
-    <a href="gate-settings.php" class="admin-btn admin-btn--secondary admin-btn--sm">Edit Gate & Countdown</a>
-    <a href="cake.php" class="admin-btn admin-btn--secondary admin-btn--sm">Edit Cake Section</a>
-    <a href="gallery/index.php" class="admin-btn admin-btn--secondary admin-btn--sm">Kelola Gallery</a>
-    <a href="letter.php" class="admin-btn admin-btn--secondary admin-btn--sm">Edit Love Letter</a>
-    <a href="messages/index.php" class="admin-btn admin-btn--secondary admin-btn--sm">Moderasi Pesan</a>
+    <a href="hero" class="admin-btn admin-btn--secondary admin-btn--sm">Edit Hero</a>
+    <a href="gate-settings" class="admin-btn admin-btn--secondary admin-btn--sm">Edit Gate & Countdown</a>
+    <a href="cake" class="admin-btn admin-btn--secondary admin-btn--sm">Edit Cake Section</a>
+    <a href="gallery/" class="admin-btn admin-btn--secondary admin-btn--sm">Kelola Gallery</a>
+    <a href="letter" class="admin-btn admin-btn--secondary admin-btn--sm">Edit Love Letter</a>
+    <a href="messages/" class="admin-btn admin-btn--secondary admin-btn--sm">Moderasi Pesan</a>
   </div>
 </div>
 

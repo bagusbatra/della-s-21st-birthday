@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         settings_set('release_timestamp', date('Y-m-d H:i:s', $timestamp));
         flash_set('success', 'Tanggal rilis berhasil diperbarui.');
-        redirect('gate-settings.php');
+        redirect('gate-settings');
     }
 }
 
@@ -54,7 +54,7 @@ include __DIR__ . '/includes/header.php';
     <?php endif; ?>
   </p>
 
-  <form method="post" action="gate-settings.php">
+  <form method="post" action="gate-settings">
     <?= csrf_field() ?>
 
     <div class="admin-form-group">
@@ -73,8 +73,8 @@ include __DIR__ . '/includes/header.php';
     <code>RENCANA-PENGEMBANGAN-ADMIN.md</code> — poin keputusan Iterasi 2 kalau ini mau diubah nanti).
   </p>
   <ul class="admin-card--muted" style="margin:0; padding-left:18px">
-    <li><code>index.php?dev=on</code> — buka situs penuh lebih awal untuk keperluan development.</li>
-    <li><code>index.php?dev=off</code> — matikan lagi mode developer sebelum situs dirilis ke publik.</li>
+    <li><code>?dev=on</code> (di situs publik) — buka situs penuh lebih awal untuk keperluan development.</li>
+    <li><code>?dev=off</code> (di situs publik) — matikan lagi mode developer sebelum situs dirilis ke publik.</li>
   </ul>
 </div>
 

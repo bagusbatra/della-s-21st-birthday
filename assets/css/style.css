@@ -201,6 +201,13 @@ body.splash-lock-scroll{overflow:hidden}
   overflow:hidden;
 }
 
+/* Floating music bar (fixed bottom-4 left-4) sits over the footer's CTA
+   buttons on narrow screens where they span close to the left edge —
+   give the footer extra clearance there so nothing gets covered. */
+@media (max-width: 640px){
+  #site-footer{ padding-bottom: 6.5rem; }
+}
+
 /* ===== Ikon SVG modern (gaya Lucide) menggantikan emoji sebagai ikon UI ===== */
 .icon{
   width:1em;

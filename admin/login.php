@@ -5,7 +5,7 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/icons.php';
 
 if (is_admin_logged_in()) {
-    redirect('index.php');
+    redirect('./');
 }
 
 $error = null;
@@ -26,10 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($admin && password_verify($password, $admin['password_hash'])) {
             admin_login($admin);
 
-            $redirectTo = $_GET['redirect'] ?? 'index.php';
+            $redirectTo = $_GET['redirect'] ?? './';
             // Cegah open redirect: hanya izinkan path relatif di dalam /admin.
             if (!is_string($redirectTo) || $redirectTo === '' || str_starts_with($redirectTo, '//') || str_contains($redirectTo, '://')) {
-                $redirectTo = 'index.php';
+                $redirectTo = './';
             }
 
             redirect($redirectTo);
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="admin-flash admin-flash--error"><?= e($error) ?></div>
       <?php endif; ?>
 
-      <form method="post" action="login.php<?= isset($_GET['redirect']) ? '?redirect=' . urlencode($_GET['redirect']) : '' ?>">
+      <form method="post" action="login<?= isset($_GET['redirect']) ? '?redirect=' . urlencode($_GET['redirect']) : '' ?>">
         <?= csrf_field() ?>
         <div class="admin-form-group">
           <label for="username">Username</label>

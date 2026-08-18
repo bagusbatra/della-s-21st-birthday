@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
 
     flash_set('success', 'Hero Section berhasil diperbarui.');
-    redirect('hero.php');
+    redirect('hero');
 }
 
 $heroBadgeText = settings_get('hero_badge_text');
@@ -33,7 +33,7 @@ include __DIR__ . '/includes/header.php';
   <h2>Edit Hero Section</h2>
   <p class="admin-card--muted">Konten ini tampil paling atas di <code>index.php</code>, tepat di bawah navbar.</p>
 
-  <form method="post" action="hero.php">
+  <form method="post" action="hero">
     <?= csrf_field() ?>
 
     <div class="admin-form-group">

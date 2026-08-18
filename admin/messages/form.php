@@ -3,6 +3,7 @@ require_once __DIR__ . '/../../includes/auth.php';
 require_admin_login();
 require_once __DIR__ . '/../../includes/helpers.php';
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../config/config.php';
 
 $pdo = get_pdo();
 
@@ -16,7 +17,7 @@ if ($id) {
 
     if (!$message) {
         flash_set('error', 'Pesan tidak ditemukan.');
-        redirect('index.php');
+        redirect('./');
     }
 }
 
@@ -29,6 +30,7 @@ $formValues = [
     'avatar_emoji' => $message['avatar_emoji'] ?? '🌸',
     'hint' => $message['hint'] ?? '',
     'message' => $message['message'] ?? '',
+    'photo_url' => $message['photo_url'] ?? '',
     'status' => $message['status'] ?? 'approved',
 ];
 
@@ -45,6 +47,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ? $_POST['status']
         : 'approved';
 
+    if (!empty($_POST['remove_photo'])) {
+        $formValues['photo_url'] = '';
+    }
+    if (!empty($_FILES['photo']['name'])) {
+        $uploadResult = process_image_upload($_FILES['photo']);
+        if ($uploadResult['error']) {
+            $errors[] = $uploadResult['error'];
+        } else {
+            $formValues['photo_url'] = $uploadResult['url'];
+        }
+    }
+
     if ($formValues['message'] === '') {
         $errors[] = 'Isi pesan wajib diisi.';
     }
@@ -54,32 +68,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$errors) {
         if ($message) {
+            // Kalau foto diganti/dihapus, bersihkan file lama biar tidak jadi sampah di disk.
+            if ($message['photo_url'] && $message['photo_url'] !== $formValues['photo_url']
+                && str_starts_with($message['photo_url'], DELLA_UPLOAD_URL . '/')) {
+                $oldPath = DELLA_UPLOAD_DIR . '/' . basename($message['photo_url']);
+                if (is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+
             $stmt = $pdo->prepare(
-                'UPDATE messages SET sender_name=?, is_anonymous=?, role_relation=?, avatar_emoji=?, hint=?, message=?, status=? WHERE id=?'
+                'UPDATE messages SET sender_name=?, is_anonymous=?, role_relation=?, avatar_emoji=?, hint=?, message=?, photo_url=?, status=? WHERE id=?'
             );
             $stmt->execute([
                 $formValues['sender_name'], $formValues['is_anonymous'], $formValues['role_relation'],
                 $formValues['avatar_emoji'], $formValues['hint'], $formValues['message'],
-                $formValues['status'], $message['id'],
+                $formValues['photo_url'] ?: null, $formValues['status'], $message['id'],
             ]);
             flash_set('success', 'Pesan berhasil diperbarui.');
         } else {
             $stmt = $pdo->prepare(
-                "INSERT INTO messages (sender_name, is_anonymous, role_relation, avatar_emoji, hint, message, status, source, likes)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 'admin', 0)"
+                "INSERT INTO messages (sender_name, is_anonymous, role_relation, avatar_emoji, hint, message, photo_url, status, source, likes)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'admin', 0)"
             );
             $stmt->execute([
                 $formValues['sender_name'], $formValues['is_anonymous'], $formValues['role_relation'],
-                $formValues['avatar_emoji'], $formValues['hint'], $formValues['message'], $formValues['status'],
+                $formValues['avatar_emoji'], $formValues['hint'], $formValues['message'],
+                $formValues['photo_url'] ?: null, $formValues['status'],
             ]);
             flash_set('success', 'Pesan baru berhasil ditambahkan.');
         }
 
-        redirect('index.php');
+        redirect('./');
     }
 }
 
-$adminBase = '../';
 $pageTitle = $message ? 'Edit Pesan' : 'Tambah Pesan Manual';
 $activeMenu = 'messages';
 include __DIR__ . '/../includes/header.php';
@@ -97,7 +120,7 @@ include __DIR__ . '/../includes/header.php';
     Gunakan ini untuk memasukkan ucapan yang kamu terima lewat WhatsApp/chat lain secara manual.
   </p>
 
-  <form method="post" action="form.php<?= $message ? '?id=' . (int) $message['id'] : '' ?>">
+  <form method="post" action="form<?= $message ? '?id=' . (int) $message['id'] : '' ?>" enctype="multipart/form-data">
     <?= csrf_field() ?>
 
     <div class="admin-form-group">
@@ -133,6 +156,21 @@ include __DIR__ . '/../includes/header.php';
     </div>
 
     <div class="admin-form-group">
+      <label>Foto (Opsional)</label>
+      <?php if ($formValues['photo_url']): ?>
+        <div style="margin-bottom:8px">
+          <img src="<?= e($formValues['photo_url']) ?>" alt="" style="max-width:220px;border-radius:10px;border:1px solid var(--admin-border);display:block;margin-bottom:6px">
+          <label style="font-weight:400">
+            <input type="checkbox" name="remove_photo" value="1">
+            Hapus foto ini
+          </label>
+        </div>
+      <?php endif; ?>
+      <input class="admin-input" type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.webp">
+      <span class="hint">jpg/png/webp, maks 5MB. Upload file baru akan menggantikan foto yang ada.</span>
+    </div>
+
+    <div class="admin-form-group">
       <label for="status">Status</label>
       <select class="admin-select" id="status" name="status">
         <option value="approved" <?= $formValues['status'] === 'approved' ? 'selected' : '' ?>>Approved (langsung tayang)</option>
@@ -142,7 +180,7 @@ include __DIR__ . '/../includes/header.php';
     </div>
 
     <button type="submit" class="admin-btn"><?= $message ? 'Simpan Perubahan' : 'Tambah Pesan' ?></button>
-    <a href="index.php" class="admin-btn admin-btn--secondary">Batal</a>
+    <a href="./" class="admin-btn admin-btn--secondary">Batal</a>
   </form>
 </div>
 

@@ -151,6 +151,10 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
       </div>
     </div>
 
+    <!-- Background Music (autoplay + loop; see assets/js/main.js for the
+         autoplay-policy fallback that resumes on first user interaction) -->
+    <audio id="bg-music" src="assets/music/<?= rawurlencode('music (2).mp3') ?>" loop preload="auto"></audio>
+
     <!-- Falling Rose Petals Canvas -->
     <canvas id="petalCanvas" class="fixed inset-0 pointer-events-none z-10 w-full h-full"></canvas>
 
@@ -219,15 +223,11 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     <!-- Floating Romantic Music Bar -->
     <div id="music-floating-bar" class="fixed bottom-4 left-4 z-40 bg-white/95 backdrop-blur-md border border-[#ffe1e9] rounded-2xl shadow-lg p-2.5 flex items-center gap-2.5 text-xs text-[#5d1c32] max-w-[280px] sm:max-w-xs">
       <button id="btn-toggle-floating-music" type="button" class="w-8 h-8 rounded-full bg-[#5d1c32] text-white flex items-center justify-center text-xs shadow-xs">
-        ▶️
+        <?= icon('play', 'icon icon-sm') ?>
       </button>
       <div class="flex-1 min-w-0">
         <div id="current-track-title" class="font-serif-elegant font-semibold text-xs truncate">Harmoni Kasih</div>
         <div id="current-track-mood" class="text-[10px] text-[#a44a66] truncate">Menyentuh & Lembut</div>
-      </div>
-      <div class="flex items-center gap-1">
-        <button id="btn-prev-track" type="button" class="p-1 rounded hover:bg-[#fce7f3] text-[10px]" title="Lagu Sebelumnya">⏮️</button>
-        <button id="btn-next-track" type="button" class="p-1 rounded hover:bg-[#fce7f3] text-[10px]" title="Lagu Selanjutnya">⏭️</button>
       </div>
     </div>
 
@@ -428,7 +428,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
             <p class="text-[#8a5d6c] text-xs sm:text-sm mt-1">Buka amplop tertutup untuk membaca doa dan pesan penuh kasih untuk Della.</p>
           </div>
           <a
-            href="pesan.php"
+            href="pesan"
             class="px-4 py-2.5 rounded-2xl bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs flex items-center gap-1.5 shadow-xs transition-all active:scale-95 shrink-0"
           >
             <?= icon('plus', 'icon icon-sm') ?>
@@ -468,9 +468,12 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
                   <h4 class="font-serif text-[#5d1c32] font-semibold text-base sm:text-lg mb-1">
                     Dari: <?= e($displayName) ?>
                   </h4>
-                  <p class="text-xs text-[#8a5d6c] italic mb-4">
+                  <p class="text-xs text-[#8a5d6c] italic <?= $msg['photo_url'] ? 'mb-1' : 'mb-4' ?>">
                     "<?= e($msg['hint'] ?: 'Pesan rahasia spesial untuk Della') ?>"
                   </p>
+                  <?php if (!empty($msg['photo_url'])): ?>
+                    <p class="mb-4 text-[10px] text-[#a44a66] inline-flex items-center gap-1"><?= icon('image', 'icon icon-sm') ?> Ada foto di dalam</p>
+                  <?php endif; ?>
                   <button type="button" class="btn-open-envelope px-5 py-2 rounded-full bg-[#5d1c32] text-white text-xs font-semibold hover:bg-[#481426] transition-all shadow-xs inline-flex items-center gap-1.5">
                     <span>Buka Segel Amplop</span>
                     <?= icon('mail', 'icon icon-sm') ?>
@@ -498,6 +501,14 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
                   <p class="font-cormorant italic text-base sm:text-lg text-[#5d1c32] leading-relaxed mb-4">
                     "<?= e($msg['message']) ?>"
                   </p>
+                  <?php if (!empty($msg['photo_url'])): ?>
+                    <img
+                      src="<?= e($msg['photo_url']) ?>"
+                      alt="Foto dari <?= e($displayName) ?>"
+                      class="w-full max-h-64 object-cover rounded-2xl border border-[#ffe1e9] mb-4"
+                      loading="lazy"
+                    >
+                  <?php endif; ?>
                 </div>
                 <div class="pt-3 border-t border-[#ffe1e9]/60 flex items-center justify-between text-xs text-[#8a5d6c]">
                   <span class="inline-flex items-center gap-1"><?= icon('clock', 'icon icon-sm') ?> <?= e(format_relative_time($msg['created_at'])) ?></span>
@@ -515,7 +526,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#fffafb] pt-16 pb-12 px-4 border-t border-[#ffe1e9] text-center mt-20 relative z-20">
+    <footer id="site-footer" class="bg-[#fffafb] pt-16 pb-12 px-4 border-t border-[#ffe1e9] text-center mt-20 relative z-20">
       <div class="max-w-4xl mx-auto space-y-4">
         <div class="w-10 h-10 mx-auto rounded-full bg-[#5d1c32] text-[#ffc2d1] flex items-center justify-center text-base">
           <?= icon('heart', 'icon') ?>

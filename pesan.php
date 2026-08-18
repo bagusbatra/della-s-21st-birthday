@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($honeypot !== '' || $submittedTooFast) {
         // Kemungkinan besar bot: pura-pura berhasil, jangan simpan apa pun.
-        redirect('pesan.php?sent=1');
+        redirect('pesan?sent=1');
     }
 
     if ($formValues['message'] === '') {
@@ -69,6 +69,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (mb_strlen($formValues['sender_name']) > 100) {
         $errors[] = 'Nama maksimal 100 karakter.';
+    }
+
+    // Foto opsional: kalau ada file diupload, validasi & pindahkan ke assets/uploads/.
+    $photoUrl = null;
+    if (!empty($_FILES['photo']['name'])) {
+        $uploadResult = process_image_upload($_FILES['photo']);
+        if ($uploadResult['error']) {
+            $errors[] = $uploadResult['error'];
+        } else {
+            $photoUrl = $uploadResult['url'];
+        }
     }
 
     // 4. Rate-limit sesi: jeda minimal 20 detik antar submit dari browser yang sama.
@@ -97,8 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$errors) {
         $stmt = $pdo->prepare(
-            "INSERT INTO messages (sender_name, is_anonymous, role_relation, avatar_emoji, hint, message, status, source, ip_address)
-             VALUES (?, ?, ?, ?, ?, ?, 'pending', 'public_form', ?)"
+            "INSERT INTO messages (sender_name, is_anonymous, role_relation, avatar_emoji, hint, message, photo_url, status, source, ip_address)
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 'public_form', ?)"
         );
         $stmt->execute([
             $formValues['is_anonymous'] ? '' : $formValues['sender_name'],
@@ -107,13 +118,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $formValues['avatar_emoji'] ?: '💌',
             $formValues['hint'],
             $formValues['message'],
+            $photoUrl,
             $ip,
         ]);
 
         $_SESSION['pesan_last_submit_at'] = time();
         unset($_SESSION['pesan_form_rendered_at']);
 
-        redirect('pesan.php?sent=1');
+        redirect('pesan?sent=1');
     }
 
     // Retry setelah error: reset jam mulai supaya time-trap tidak salah tembak.
@@ -141,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <canvas id="petalCanvas" class="fixed inset-0 pointer-events-none z-0 w-full h-full"></canvas>
 
     <div class="max-w-2xl mx-auto px-4 py-12 pesan-content">
-      <a href="index.php" class="pesan-brand">
+      <a href="./" class="pesan-brand">
         <span class="pesan-brand__icon"><?= icon('heart', 'icon') ?></span>
         <span>
           <strong>Della Puspa Ardiati</strong>
@@ -158,10 +170,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               Ucapanmu sudah diterima dan sedang menunggu untuk ditampilkan di halaman utama Della.
             </p>
             <div class="flex flex-wrap items-center justify-center gap-3">
-              <a href="pesan.php" class="px-5 py-2.5 rounded-full bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-xs">
+              <a href="pesan" class="px-5 py-2.5 rounded-full bg-[#5d1c32] hover:bg-[#481426] text-white font-medium text-xs shadow-xs">
                 Kirim Ucapan Lain
               </a>
-              <a href="index.php" class="px-5 py-2.5 rounded-full bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-xs shadow-xs">
+              <a href="./" class="px-5 py-2.5 rounded-full bg-white hover:bg-[#fdf2f8] text-[#5d1c32] border border-[#ffe1e9] font-medium text-xs shadow-xs">
                 Kembali ke Beranda
               </a>
             </div>
@@ -185,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
           <?php endif; ?>
 
-          <form method="post" action="pesan.php" class="space-y-3 text-xs">
+          <form method="post" action="pesan" enctype="multipart/form-data" class="space-y-3 text-xs">
             <!-- Honeypot: dibiarkan kosong oleh manusia, sering terisi otomatis oleh bot -->
             <div class="pesan-honeypot" aria-hidden="true">
               <label for="website">Website</label>
@@ -236,6 +248,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 class="w-full p-3 rounded-2xl border border-[#ffe1e9] bg-white text-xs text-[#5d1c32] focus:outline-none focus:border-[#a44a66]"
               >
               <span class="block mt-1 text-[10px] text-[#8a5d6c]">Petunjuk kecil yang tampil sebelum Della membuka amplopmu.</span>
+            </div>
+
+            <div>
+              <label class="block text-[#8a5d6c] mb-1">Foto (Opsional)</label>
+              <input
+                type="file" name="photo" accept=".jpg,.jpeg,.png,.webp"
+                class="w-full p-2.5 rounded-2xl border border-[#ffe1e9] bg-white text-xs text-[#5d1c32] focus:outline-none focus:border-[#a44a66]"
+              >
+              <span class="block mt-1 text-[10px] text-[#8a5d6c]">Boleh sertakan 1 foto kalau mau (jpg/png/webp, maks 5MB). Foto akan muncul saat Della buka segel amplopmu.</span>
             </div>
 
             <div>

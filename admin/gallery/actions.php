@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../config/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirect('index.php');
+    redirect('./');
 }
 
 csrf_require_valid();
@@ -66,4 +66,4 @@ switch ($action) {
         break;
 }
 
-redirect('index.php');
+redirect('./');

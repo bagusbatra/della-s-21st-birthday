@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
 
     flash_set('success', 'Surat cinta berhasil diperbarui.');
-    redirect('letter.php');
+    redirect('letter');
 }
 
 $loveLetter = $pdo->query('SELECT * FROM love_letter WHERE id = 1')->fetch();
@@ -47,7 +47,7 @@ include __DIR__ . '/includes/header.php';
   <h2>Edit Surat Cinta</h2>
   <p class="admin-card--muted">Konten ini tampil di modal "Surat Cinta Rahasia" pada situs publik.</p>
 
-  <form method="post" action="letter.php">
+  <form method="post" action="letter">
     <?= csrf_field() ?>
 
     <div class="admin-form-group">

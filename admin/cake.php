@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
 
     flash_set('success', 'Teks Cake Section berhasil diperbarui.');
-    redirect('cake.php');
+    redirect('cake');
 }
 
 $cakeBannerName = settings_get('cake_banner_name');
@@ -36,7 +36,7 @@ include __DIR__ . '/includes/header.php';
     "Make a Wish" tidak dikelola di sini karena murni interaksi client-side, tidak ada datanya di database.
   </p>
 
-  <form method="post" action="cake.php">
+  <form method="post" action="cake">
     <?= csrf_field() ?>
 
     <div class="admin-form-group">

@@ -24,7 +24,6 @@ $counts = $pdo->query(
     "SELECT status, COUNT(*) c FROM messages GROUP BY status"
 )->fetchAll(PDO::FETCH_KEY_PAIR);
 
-$adminBase = '../';
 $pageTitle = 'Wishes & Messages';
 $activeMenu = 'messages';
 include __DIR__ . '/../includes/header.php';
@@ -47,7 +46,7 @@ $statusLabel = [
       Ucapan & Pesan
       (<?= count($messages) ?><?= $statusFilter !== 'all' ? ' ' . e($statusLabel[$statusFilter]) : '' ?>)
     </h2>
-    <a href="form.php" class="admin-btn">+ Tambah Manual</a>
+    <a href="form" class="admin-btn">+ Tambah Manual</a>
   </div>
 
   <div style="display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap">
@@ -59,7 +58,7 @@ $statusLabel = [
             : ($counts[$f] ?? 0);
       ?>
       <a
-        href="index.php?status=<?= e($f) ?>"
+        href="?status=<?= e($f) ?>"
         class="admin-btn admin-btn--sm <?= $statusFilter === $f ? '' : 'admin-btn--secondary' ?>"
       ><?= e($label) ?> (<?= $count ?>)</a>
     <?php endforeach; ?>
@@ -89,6 +88,11 @@ $statusLabel = [
               </td>
               <td style="max-width:320px">
                 <?= e(mb_strimwidth($m['message'], 0, 120, '…')) ?>
+                <?php if (!empty($m['photo_url'])): ?>
+                  <div style="margin-top:6px">
+                    <img src="<?= e($m['photo_url']) ?>" alt="" style="max-width:80px;max-height:80px;border-radius:8px;border:1px solid var(--admin-border);object-fit:cover">
+                  </div>
+                <?php endif; ?>
               </td>
               <td>
                 <span class="admin-badge <?= $statusBadgeClass[$m['status']] ?? 'admin-badge--muted' ?>">
@@ -98,10 +102,10 @@ $statusLabel = [
               <td><span class="admin-badge admin-badge--muted"><?= e($m['source']) ?></span></td>
               <td class="admin-card--muted"><?= e(format_relative_time($m['created_at'])) ?></td>
               <td>
-                <a href="form.php?id=<?= (int) $m['id'] ?>" class="admin-btn admin-btn--secondary admin-btn--sm">Edit</a>
+                <a href="form?id=<?= (int) $m['id'] ?>" class="admin-btn admin-btn--secondary admin-btn--sm">Edit</a>
 
                 <?php if ($m['status'] !== 'approved'): ?>
-                  <form method="post" action="actions.php" style="display:inline">
+                  <form method="post" action="actions" style="display:inline">
                     <?= csrf_field() ?>
                     <input type="hidden" name="id" value="<?= (int) $m['id'] ?>">
                     <input type="hidden" name="action" value="approve">
@@ -110,7 +114,7 @@ $statusLabel = [
                 <?php endif; ?>
 
                 <?php if ($m['status'] !== 'rejected'): ?>
-                  <form method="post" action="actions.php" style="display:inline">
+                  <form method="post" action="actions" style="display:inline">
                     <?= csrf_field() ?>
                     <input type="hidden" name="id" value="<?= (int) $m['id'] ?>">
                     <input type="hidden" name="action" value="reject">
@@ -118,7 +122,7 @@ $statusLabel = [
                   </form>
                 <?php endif; ?>
 
-                <form method="post" action="actions.php" style="display:inline" onsubmit="return confirm('Hapus pesan ini secara permanen?');">
+                <form method="post" action="actions" style="display:inline" onsubmit="return confirm('Hapus pesan ini secara permanen?');">
                   <?= csrf_field() ?>
                   <input type="hidden" name="id" value="<?= (int) $m['id'] ?>">
                   <input type="hidden" name="action" value="delete">

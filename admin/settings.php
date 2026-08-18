@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form'] ?? '') === 'profile
         $_SESSION['admin_display_name'] = $displayName;
 
         flash_set('success', 'Profil berhasil diperbarui.');
-        redirect('settings.php');
+        redirect('settings');
     }
 }
 
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form'] ?? '') === 'passwor
         $newHash = password_hash($newPassword, PASSWORD_BCRYPT);
         $pdo->prepare('UPDATE admins SET password_hash = ? WHERE id = ?')->execute([$newHash, $adminId]);
         flash_set('success', 'Password berhasil diganti.');
-        redirect('settings.php');
+        redirect('settings');
     }
 }
 
@@ -83,7 +83,7 @@ include __DIR__ . '/includes/header.php';
     </div>
   <?php endif; ?>
 
-  <form method="post" action="settings.php">
+  <form method="post" action="settings">
     <?= csrf_field() ?>
     <input type="hidden" name="form" value="profile">
 
@@ -110,7 +110,7 @@ include __DIR__ . '/includes/header.php';
     </div>
   <?php endif; ?>
 
-  <form method="post" action="settings.php">
+  <form method="post" action="settings">
     <?= csrf_field() ?>
     <input type="hidden" name="form" value="password">
 

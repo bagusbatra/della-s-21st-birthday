@@ -257,4 +257,60 @@ a:hover { text-decoration: underline; }
 .icon-sm{ width:.85em; height:.85em; }
 
 .admin-nav a .icon{ width:16px; height:16px; }
+
+/* ---------- Responsive: collapsible sidebar on mobile ---------- */
+.admin-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--admin-text);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.admin-menu-toggle:hover { background: #f7f7f8; }
+
+.admin-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 10, 15, .45);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+.admin-sidebar-overlay.is-open { opacity: 1; pointer-events: auto; }
+
+@media (max-width: 860px) {
+  .admin-menu-toggle { display: flex; }
+
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, .2);
+    transition: transform .25s ease;
+  }
+  .admin-sidebar.is-open { transform: translateX(0); }
+
+  .admin-sidebar-overlay { display: block; }
+
+  .admin-topbar { padding: 14px 16px; gap: 10px; }
+  .admin-topbar h1 { font-size: 15px; }
+  .admin-topbar__user span { display: none; }
+  .admin-content { padding: 16px; }
+}
+
+@media (max-width: 480px) {
+  .admin-login-card { padding: 26px 20px; }
+  .admin-stat__value { font-size: 22px; }
+}
 .admin-btn .icon{ width:14px; height:14px; }

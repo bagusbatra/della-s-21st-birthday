@@ -17,48 +17,8 @@ if ($id) {
 
     if (!$memory) {
         flash_set('error', 'Foto tidak ditemukan.');
-        redirect('index.php');
+        redirect('./');
     }
-}
-
-/**
- * Validasi & pindahkan file upload ke assets/uploads/.
- * Return ['url' => string|null, 'error' => string|null]
- */
-function process_memory_upload(array $file): array
-{
-    $allowedExt = ['jpg', 'jpeg', 'png', 'webp'];
-    $maxBytes = 5 * 1024 * 1024;
-
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-        return ['url' => null, 'error' => 'Upload gagal (kode error: ' . $file['error'] . ').'];
-    }
-
-    if ($file['size'] > $maxBytes) {
-        return ['url' => null, 'error' => 'Ukuran file maksimal 5MB.'];
-    }
-
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($ext, $allowedExt, true)) {
-        return ['url' => null, 'error' => 'Format file harus jpg, jpeg, png, atau webp.'];
-    }
-
-    if (@getimagesize($file['tmp_name']) === false) {
-        return ['url' => null, 'error' => 'File yang diupload bukan gambar yang valid.'];
-    }
-
-    if (!is_dir(DELLA_UPLOAD_DIR)) {
-        mkdir(DELLA_UPLOAD_DIR, 0755, true);
-    }
-
-    $filename = bin2hex(random_bytes(12)) . '.' . $ext;
-    $destination = DELLA_UPLOAD_DIR . '/' . $filename;
-
-    if (!move_uploaded_file($file['tmp_name'], $destination)) {
-        return ['url' => null, 'error' => 'Gagal menyimpan file ke server.'];
-    }
-
-    return ['url' => DELLA_UPLOAD_URL . '/' . $filename, 'error' => null];
 }
 
 $errors = [];
@@ -85,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $formValues['image_url'] = trim($_POST['image_url'] ?? '');
 
     if (!empty($_FILES['image_file']['name'])) {
-        $uploadResult = process_memory_upload($_FILES['image_file']);
+        $uploadResult = process_image_upload($_FILES['image_file']);
         if ($uploadResult['error']) {
             $errors[] = $uploadResult['error'];
         } else {
@@ -126,11 +86,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash_set('success', 'Foto baru berhasil ditambahkan.');
         }
 
-        redirect('index.php');
+        redirect('./');
     }
 }
 
-$adminBase = '../';
 $pageTitle = $memory ? 'Edit Foto' : 'Tambah Foto Baru';
 $activeMenu = 'gallery';
 include __DIR__ . '/../includes/header.php';
@@ -147,7 +106,7 @@ include __DIR__ . '/../includes/header.php';
 <div class="admin-card">
   <h2><?= $memory ? 'Edit Foto Kenangan' : 'Tambah Foto Kenangan Baru' ?></h2>
 
-  <form method="post" action="form.php<?= $memory ? '?id=' . (int) $memory['id'] : '' ?>" enctype="multipart/form-data">
+  <form method="post" action="form<?= $memory ? '?id=' . (int) $memory['id'] : '' ?>" enctype="multipart/form-data">
     <?= csrf_field() ?>
 
     <?php if ($formValues['image_url']): ?>
@@ -201,7 +160,7 @@ include __DIR__ . '/../includes/header.php';
     </div>
 
     <button type="submit" class="admin-btn"><?= $memory ? 'Simpan Perubahan' : 'Tambah Foto' ?></button>
-    <a href="index.php" class="admin-btn admin-btn--secondary">Batal</a>
+    <a href="./" class="admin-btn admin-btn--secondary">Batal</a>
   </form>
 </div>
 

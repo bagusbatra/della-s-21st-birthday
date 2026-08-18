@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `envelope_color` VARCHAR(20) NULL,
   `message` TEXT NOT NULL,
   `hint` VARCHAR(255) NULL,
+  `photo_url` VARCHAR(255) NULL,
   `status` ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
   `source` ENUM('seed','admin','public_form') NOT NULL DEFAULT 'admin',
   `likes` INT UNSIGNED NOT NULL DEFAULT 0,
