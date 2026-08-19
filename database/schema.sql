@@ -97,6 +97,20 @@ CREATE TABLE IF NOT EXISTS `messages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
+-- birthday_wishes: isi popup "Harapan Ulang Tahun ke-21" saat 21 lilin
+-- ditiup di halaman index.php. Anonim, tidak ditampilkan publik — hanya
+-- untuk dibaca Della lewat Admin Panel.
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `birthday_wishes` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `wish_text` TEXT NOT NULL,
+  `ip_address` VARCHAR(45) NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_birthday_wishes_created` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
 -- admin_activity_log: opsional, jejak audit sederhana (Iterasi 6)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `admin_activity_log` (

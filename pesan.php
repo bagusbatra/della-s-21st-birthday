@@ -139,6 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Titip Ucapan untuk Della · Della's 21st Birthday</title>
   <meta name="description" content="Kirim doa dan ucapan selamat ulang tahun ke-21 untuk Della Puspa Ardiati, boleh anonim." />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -153,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <canvas id="petalCanvas" class="fixed inset-0 pointer-events-none z-0 w-full h-full"></canvas>
 
     <div class="max-w-2xl mx-auto px-4 py-12 pesan-content">
-      <a href="./" class="pesan-brand">
+      <a href="./" class="reveal pesan-brand">
         <span class="pesan-brand__icon"><?= icon('heart', 'icon') ?></span>
         <span>
           <strong>Della Puspa Ardiati</strong>
@@ -279,7 +280,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <script type="module">
     import { initPetalCanvas } from './assets/js/petals.js';
+    import { initScrollReveal } from './assets/js/scroll-reveal.js';
     initPetalCanvas();
+    initScrollReveal();
   </script>
 </body>
 </html>

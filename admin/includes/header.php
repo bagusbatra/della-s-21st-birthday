@@ -27,6 +27,7 @@ $menuItems = [
     ['key' => 'hero', 'label' => 'Hero Section', 'href' => 'hero', 'icon' => 'mail'],
     ['key' => 'gate', 'label' => 'Gate & Countdown', 'href' => 'gate-settings', 'icon' => 'hourglass'],
     ['key' => 'cake', 'label' => 'Cake Section', 'href' => 'cake', 'icon' => 'cake'],
+    ['key' => 'birthday-wishes', 'label' => 'Harapan Ulang Tahun', 'href' => 'birthday-wishes', 'icon' => 'sparkles'],
     ['key' => 'gallery', 'label' => 'Gallery / Memories', 'href' => 'gallery/', 'icon' => 'image'],
     ['key' => 'letter', 'label' => 'Love Letter', 'href' => 'letter', 'icon' => 'heart'],
     ['key' => 'messages', 'label' => 'Wishes & Messages', 'href' => 'messages/', 'icon' => 'message-circle', 'badge' => $sidebarPendingCount],
@@ -39,6 +40,7 @@ $menuItems = [
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= e($pageTitle) ?> · Admin Della's 21st Birthday</title>
+  <link rel="icon" type="image/svg+xml" href="<?= e($siteBaseUrl) ?>assets/favicon.svg">
   <link rel="stylesheet" href="<?= e($siteBaseUrl) ?>assets/css/admin.css">
 </head>
 <body class="admin-body">

@@ -53,7 +53,7 @@ function require_admin_login(): void
 {
     if (!is_admin_logged_in()) {
         $redirectTo = $_SERVER['REQUEST_URI'] ?? '';
-        $loginUrl = admin_base_url() . 'login.php';
+        $loginUrl = admin_base_url() . 'login';
         header('Location: ' . $loginUrl . ($redirectTo ? '?redirect=' . urlencode($redirectTo) : ''));
         exit;
     }

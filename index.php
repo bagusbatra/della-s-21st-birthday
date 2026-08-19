@@ -3,10 +3,6 @@
  * Release gate: the full site only renders on/after the birthday date.
  * Before that, visitors see a locked countdown gate.
  *
- * Developer access (bypasses the gate while building/testing):
- *   index.php?dev=on   -> unlocks the full site early (stored in a cookie)
- *   index.php?dev=off  -> turns developer mode back off before launch
- *
  * Konten Hero/Cake/Gate & tanggal rilis sekarang dikelola lewat Admin Panel
  * (tabel `settings` di MySQL) — lihat RENCANA-PENGEMBANGAN-ADMIN.md Iterasi 1 & 2.
  */
@@ -15,20 +11,14 @@ require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/includes/settings.php';
 require_once __DIR__ . '/includes/helpers.php';
 require_once __DIR__ . '/includes/icons.php';
+require_once __DIR__ . '/includes/auth.php';
 
-if (isset($_GET['dev'])) {
-    if ($_GET['dev'] === 'on') {
-        setcookie(DELLA_DEV_COOKIE, '1', time() + 60 * 60 * 24 * 365, '/');
-        $_COOKIE[DELLA_DEV_COOKIE] = '1';
-    } elseif ($_GET['dev'] === 'off') {
-        setcookie(DELLA_DEV_COOKIE, '', time() - 3600, '/');
-        unset($_COOKIE[DELLA_DEV_COOKIE]);
-    }
-}
-
-$isDeveloperMode = isset($_COOKIE[DELLA_DEV_COOKIE]) && $_COOKIE[DELLA_DEV_COOKIE] === '1';
 $isReleased = time() >= DELLA_RELEASE_TIMESTAMP;
-$showFullSite = $isReleased || $isDeveloperMode;
+// Admin yang sedang login boleh melihat situs lebih awal (preview) meski
+// belum rilis ke publik — tidak ada lagi bypass lewat URL, harus benar-benar
+// login lewat /admin/ dulu.
+$isAdminPreview = !$isReleased && is_admin_logged_in();
+$showFullSite = $isReleased || $isAdminPreview;
 $releaseIso = date('c', DELLA_RELEASE_TIMESTAMP);
 $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
 ?>
@@ -39,7 +29,8 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Happy 21st Birthday, Della Puspa Ardiati 🌸✨</title>
     <meta name="description" content="Selamat Ulang Tahun ke-21 untuk Della Puspa Ardiati. Semoga cinta, kebahagiaan, dan segala impian indah senantiasa menyertaimu." />
-    
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,11 +41,12 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
   </head>
   <body class="bg-[#fffafb] text-[#5d1c32] antialiased selection:bg-[#ffc2d1] selection:text-[#5d1c32] min-h-screen overflow-x-hidden font-sans">
 
-    <?php if ($isDeveloperMode && !$isReleased): ?>
-    <!-- Developer Mode Banner (only visible pre-release, only to whoever unlocked ?dev=on) -->
-    <div class="dev-mode-banner">
-      <?= icon('wrench', 'icon') ?> Mode Developer Aktif — situs asli masih terkunci sampai <?= e($releaseDisplay) ?>.
-      <a href="?dev=off">Nonaktifkan mode developer</a>
+    <?php if ($isAdminPreview): ?>
+    <!-- Admin Preview Banner — only ever shown to a genuinely logged-in
+         admin session, never a public bypass. -->
+    <div class="admin-preview-banner">
+      <?= icon('eye', 'icon') ?> Mode Preview Admin — situs ini masih terkunci untuk publik sampai <?= e($releaseDisplay) ?>.
+      <a href="<?= e(admin_base_url()) ?>">Kembali ke Admin Panel</a>
     </div>
     <?php endif; ?>
 
@@ -105,13 +97,6 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
         </div>
 
         <p class="font-cormorant italic text-sm text-[#8a5d6c] mt-6">Sabar ya, sedikit lagi waktunya tiba&hellip;</p>
-
-        <!-- ====================================================================
-             TEMPORARY DEV BYPASS — remove this <a> block before going live.
-             It unlocks the full site early so development/testing doesn't
-             have to wait for the real date.
-        ==================================================================== -->
-        <a href="?dev=on" class="gate-dev-skip">Lewati (Mode Developer) →</a>
       </div>
     </div>
 
@@ -236,22 +221,22 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
 
       <!-- Hero Section -->
       <section id="hero-section" class="min-h-[85vh] flex flex-col items-center justify-center text-center px-4 pt-12 pb-16 relative">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fce7f3] border border-[#ffc2d1] text-[#5d1c32] text-xs font-semibold uppercase tracking-wider mb-6 animate-soft-pulse">
+        <div class="reveal inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fce7f3] border border-[#ffc2d1] text-[#5d1c32] text-xs font-semibold uppercase tracking-wider mb-6 animate-soft-pulse" style="--reveal-i:0">
           <?= icon('sparkles', 'icon icon-sm') ?>
           <span><?= e(trim(settings_get('hero_badge_text', '19 Agustus • 21st Special Milestone'), " \u{2728}")) ?></span>
           <?= icon('sparkles', 'icon icon-sm') ?>
         </div>
 
-        <h1 class="font-serif-elegant text-4xl sm:text-6xl md:text-7xl font-normal text-[#5d1c32] max-w-4xl leading-tight mb-4">
+        <h1 class="reveal font-serif-elegant text-4xl sm:text-6xl md:text-7xl font-normal text-[#5d1c32] max-w-4xl leading-tight mb-4" style="--reveal-i:1">
           <?= e(settings_get('hero_title_line1', 'Selamat Ulang Tahun ke-21,')) ?><br/>
           <span class="font-romantic text-5xl sm:text-7xl md:text-8xl text-[#a44a66] block mt-2"><?= e(settings_get('hero_title_line2', 'Della Puspa Ardiati')) ?></span>
         </h1>
 
-        <p class="font-cormorant italic text-xl sm:text-2xl md:text-3xl text-[#8a5d6c] max-w-2xl mx-auto mb-8 leading-relaxed">
+        <p class="reveal font-cormorant italic text-xl sm:text-2xl md:text-3xl text-[#8a5d6c] max-w-2xl mx-auto mb-8 leading-relaxed" style="--reveal-i:2">
           "<?= e(settings_get('hero_quote', 'Dua puluh satu tahun kebaikan, tawa yang menyejukkan jiwa, dan senyuman termanis yang selalu menghangatkan semesta.')) ?>"
         </p>
 
-        <div class="flex flex-wrap items-center justify-center gap-3.5 relative z-20">
+        <div class="reveal flex flex-wrap items-center justify-center gap-3.5 relative z-20" style="--reveal-i:3">
           <button
             data-action="open-letter"
             type="button"
@@ -273,13 +258,13 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
 
       <!-- Birthday Cake Section -->
       <section id="cake-section" class="max-w-5xl mx-auto px-4">
-        <div class="text-center max-w-2xl mx-auto mb-8">
+        <div class="reveal text-center max-w-2xl mx-auto mb-8">
           <p class="uppercase tracking-[0.3em] text-xs text-[#a44a66] font-medium mb-1">Make a Wish</p>
           <h2 class="font-serif-elegant text-3xl sm:text-4xl text-[#5d1c32] mb-2">Tiup 21 Lilin Harapan Della</h2>
           <p class="text-[#8a5d6c] text-xs sm:text-sm">Klik lilin satu per satu atau tiup semua sekaligus untuk menyampaikan permohonanmu.</p>
         </div>
 
-        <div class="bg-white/80 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-[#ffe1e9] shadow-xs text-center max-w-3xl mx-auto">
+        <div class="reveal reveal-scale bg-white/80 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-[#ffe1e9] shadow-xs text-center max-w-3xl mx-auto">
           <!-- Candle Status Badge -->
           <div class="mb-6">
             <span id="candle-status-badge" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#fce7f3] text-[#5d1c32] border border-[#ffc2d1] text-xs font-semibold">
@@ -355,7 +340,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
         }
       ?>
       <section id="memories-section" class="max-w-6xl mx-auto px-4">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+        <div class="reveal flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
           <div class="text-center sm:text-left">
             <p class="uppercase tracking-[0.3em] text-xs text-[#a44a66] font-medium mb-1">Captured Moments</p>
             <h2 class="font-serif-elegant text-3xl sm:text-4xl text-[#5d1c32]">Jejak Kasih & Senyuman Della</h2>
@@ -363,55 +348,29 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
           </div>
         </div>
 
-        <!-- Tag Filters -->
-        <div id="gallery-tag-filters" class="flex flex-wrap items-center gap-2 mb-6">
-          <?php foreach ($galleryTags as $tag): ?>
-            <button
-              type="button"
-              class="gallery-tag-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all <?= $tag === 'Semua' ? 'bg-[#5d1c32] text-white shadow-xs' : 'bg-white text-[#8a5d6c] border border-[#ffe1e9] hover:bg-[#fdf2f8]' ?>"
-              data-tag="<?= e($tag) ?>"
-            ><?= e($tag) ?></button>
-          <?php endforeach; ?>
-        </div>
-
         <!-- Gallery Grid -->
         <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <?php if (empty($memories)): ?>
             <p class="text-center text-[#8a5d6c] text-sm col-span-full py-10">Belum ada foto kenangan yang ditambahkan.</p>
           <?php endif; ?>
-          <?php foreach ($memories as $m): ?>
-            <div class="gallery-card bg-white p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md border border-[#ffe1e9] transition-all duration-300 group flex flex-col justify-between" data-tag="<?= e($m['tag']) ?>">
-              <div>
-                <div
-                  class="gallery-card-image aspect-[4/5] rounded-xl overflow-hidden mb-3 bg-[#fdf2f8] relative cursor-pointer group-hover:opacity-95 transition-opacity"
-                  data-url="<?= e($m['image_url']) ?>"
-                  data-caption="<?= e($m['caption']) ?>"
-                  data-date="<?= e($m['event_date']) ?>"
-                  data-location="<?= e($m['location']) ?>"
-                  data-tag="<?= e($m['tag']) ?>"
-                  data-note="<?= e($m['note']) ?>"
-                  data-likes="<?= (int) $m['likes'] ?>"
-                >
-                  <img src="<?= e($m['image_url']) ?>" alt="<?= e($m['caption']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                  <span class="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-xs text-[10px] text-[#5d1c32] font-semibold shadow-xs">
-                    <?= e($m['tag'] ?: 'Kenangan') ?>
-                  </span>
-                </div>
-                <h3 class="font-serif text-[#5d1c32] font-semibold text-sm sm:text-base leading-snug line-clamp-2 mb-1">
-                  <?= e($m['caption']) ?>
-                </h3>
-                <p class="text-xs text-[#8a5d6c] line-clamp-2 mb-3">
-                  <?= e($m['note']) ?>
-                </p>
+          <?php foreach ($memories as $i => $m): ?>
+            <div class="gallery-card moment-card reveal reveal-scale" data-tag="<?= e($m['tag']) ?>" style="--reveal-i:<?= $i % 6 ?>">
+              <div
+                class="gallery-card-image moment-card-media"
+                data-url="<?= e($m['image_url']) ?>"
+                data-caption="<?= e($m['caption']) ?>"
+                data-date="<?= e($m['event_date']) ?>"
+                data-location="<?= e($m['location']) ?>"
+                data-tag="<?= e($m['tag']) ?>"
+                data-note="<?= e($m['note']) ?>"
+                data-likes="<?= (int) $m['likes'] ?>"
+              >
+                <img src="<?= e($m['image_url']) ?>" alt="<?= e($m['caption']) ?>" loading="lazy" />
+                <div class="moment-card-overlay"></div>
               </div>
-              <div class="pt-2 border-t border-[#ffe1e9]/60 flex items-center justify-between text-xs text-[#8a5d6c]">
-                <span class="flex items-center gap-1 font-medium">
-                  <?= icon('calendar', 'icon icon-sm') ?> <?= e($m['event_date']) ?>
-                </span>
-                <button class="btn-like-memory flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-[#fce7f3] text-[#5d1c32] transition-colors">
-                  <span class="text-rose-500"><?= icon('heart', 'icon icon-sm') ?></span>
-                  <span class="like-count font-semibold text-xs"><?= (int) $m['likes'] ?></span>
-                </button>
+              <div class="moment-card-body">
+                <h3 class="moment-card-title"><?= e($m['caption']) ?></h3>
+                <p class="moment-card-text"><?= e($m['note']) ?></p>
               </div>
             </div>
           <?php endforeach; ?>
@@ -421,7 +380,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
       <!-- Secret Wishes Envelopes -->
       <?php $messages = get_pdo()->query("SELECT * FROM messages WHERE status = 'approved' ORDER BY created_at DESC")->fetchAll(); ?>
       <section id="wishes-section" class="max-w-6xl mx-auto px-4">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+        <div class="reveal flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
           <div class="text-center sm:text-left">
             <p class="uppercase tracking-[0.3em] text-xs text-[#a44a66] font-medium mb-1">Secret Letters & Prayers</p>
             <h2 class="font-serif-elegant text-3xl sm:text-4xl text-[#5d1c32]">Ucapan Kasih dari Teman & Keluarga</h2>
@@ -437,7 +396,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
         </div>
 
         <!-- Wish Filters -->
-        <div class="flex items-center gap-2 mb-6">
+        <div class="reveal flex items-center gap-2 mb-6">
           <button id="filter-wishes-all" type="button" class="px-3 py-1.5 rounded-full text-xs font-medium bg-[#5d1c32] text-white shadow-xs">
             Semua Amplop
           </button>
@@ -454,9 +413,9 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
           <?php if (empty($messages)): ?>
             <p class="text-center text-[#8a5d6c] text-sm col-span-full py-10">Belum ada ucapan yang tayang.</p>
           <?php endif; ?>
-          <?php foreach ($messages as $msg): ?>
+          <?php foreach ($messages as $wi => $msg): ?>
             <?php $displayName = $msg['is_anonymous'] ? 'Sahabat Rahasia' : $msg['sender_name']; ?>
-            <div class="wish-card rounded-3xl p-5 sm:p-6 transition-all duration-300 border flex flex-col justify-between bg-gradient-to-br from-[#fffafb] to-[#fce7f3] border-[#ffc2d1] shadow-sm hover:shadow-md cursor-pointer" data-state="unopened">
+            <div class="wish-card reveal reveal-scale rounded-3xl p-5 sm:p-6 transition-all duration-300 border flex flex-col justify-between bg-gradient-to-br from-[#fffafb] to-[#fce7f3] border-[#ffc2d1] shadow-sm hover:shadow-md cursor-pointer" data-state="unopened" style="--reveal-i:<?= $wi % 6 ?>">
               <div class="wish-sealed-view">
                 <div class="text-center py-4">
                   <div class="w-16 h-16 mx-auto rounded-full bg-[#5d1c32] text-[#ffc2d1] flex items-center justify-center text-2xl shadow-md mb-3 animate-pulse border-2 border-[#ffe1e9]">
@@ -527,7 +486,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
 
     <!-- Footer -->
     <footer id="site-footer" class="bg-[#fffafb] pt-16 pb-12 px-4 border-t border-[#ffe1e9] text-center mt-20 relative z-20">
-      <div class="max-w-4xl mx-auto space-y-4">
+      <div class="reveal max-w-4xl mx-auto space-y-4">
         <div class="w-10 h-10 mx-auto rounded-full bg-[#5d1c32] text-[#ffc2d1] flex items-center justify-center text-base">
           <?= icon('heart', 'icon') ?>
         </div>
@@ -658,6 +617,7 @@ $releaseDisplay = format_indonesian_datetime(DELLA_RELEASE_TIMESTAMP);
         <div id="wish-sent-alert" class="hidden mt-4 p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-center text-xs font-medium">
           Harapanmu telah melayang dan didoakan semesta! Semoga terwujud indah!
         </div>
+        <div id="wish-error-alert" class="hidden mt-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-xl text-center text-xs font-medium"></div>
       </div>
     </div>
 

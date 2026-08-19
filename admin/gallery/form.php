@@ -63,6 +63,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$errors) {
         if ($memory) {
+            // Kalau foto diganti (upload baru/URL baru), bersihkan file upload lama
+            // biar tidak jadi sampah menumpuk di assets/uploads/.
+            if ($memory['image_url'] && $memory['image_url'] !== $formValues['image_url']
+                && str_starts_with($memory['image_url'], DELLA_UPLOAD_URL . '/')) {
+                $oldPath = DELLA_UPLOAD_DIR . '/' . basename($memory['image_url']);
+                if (is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+
             $stmt = $pdo->prepare(
                 'UPDATE memories SET image_url=?, caption=?, event_date=?, location=?, tag=?, note=?, is_published=? WHERE id=?'
             );

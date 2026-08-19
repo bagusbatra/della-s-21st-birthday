@@ -1,5 +1,6 @@
 <?php
 /**
+ * db.php — konfigurasi database.
  * Koneksi database (PDO + MySQL). Semua query di admin/publik wajib
  * pakai prepared statement lewat koneksi ini — jangan pernah
  * concat string user input langsung ke SQL.

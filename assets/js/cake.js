@@ -13,6 +13,7 @@ export function initBirthdayCake() {
   const btnCloseWish = document.getElementById('btn-close-wish');
   const formWish = document.getElementById('form-make-wish');
   const wishSentAlert = document.getElementById('wish-sent-alert');
+  const wishErrorAlert = document.getElementById('wish-error-alert');
   const inputWishText = document.getElementById('input-wish-text');
 
   function renderCandles(justBlownOut = new Set()) {
@@ -128,16 +129,45 @@ export function initBirthdayCake() {
   }
 
   if (formWish) {
-    formWish.addEventListener('submit', (e) => {
+    formWish.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (wishSentAlert) {
-        wishSentAlert.classList.remove('hidden');
-        triggerRomanticConfetti();
-        if (inputWishText) inputWishText.value = '';
-        setTimeout(() => {
-          wishSentAlert.classList.add('hidden');
-          if (wishModal) wishModal.classList.add('hidden');
-        }, 2200);
+      const wishText = inputWishText ? inputWishText.value.trim() : '';
+      if (!wishText) return;
+
+      if (wishErrorAlert) wishErrorAlert.classList.add('hidden');
+
+      const submitBtn = formWish.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const response = await fetch('wish-submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'wish_text=' + encodeURIComponent(wishText),
+        });
+        const data = await response.json();
+
+        if (data.ok) {
+          if (wishSentAlert) {
+            wishSentAlert.classList.remove('hidden');
+            triggerRomanticConfetti();
+            if (inputWishText) inputWishText.value = '';
+            setTimeout(() => {
+              wishSentAlert.classList.add('hidden');
+              if (wishModal) wishModal.classList.add('hidden');
+            }, 2200);
+          }
+        } else if (wishErrorAlert) {
+          wishErrorAlert.textContent = data.error || 'Gagal mengirim harapan, coba lagi ya.';
+          wishErrorAlert.classList.remove('hidden');
+        }
+      } catch (err) {
+        if (wishErrorAlert) {
+          wishErrorAlert.textContent = 'Gagal mengirim harapan, coba lagi ya.';
+          wishErrorAlert.classList.remove('hidden');
+        }
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }

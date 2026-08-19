@@ -1,5 +1,6 @@
 <?php
 /**
+ * config.php — konfigurasi umum situs.
  * Konfigurasi umum situs. Dipakai oleh index.php maupun admin/*.
  *
  * PENTING: require_once "config/db.php" SEBELUM file ini — DELLA_RELEASE_TIMESTAMP
@@ -10,7 +11,6 @@
 
 date_default_timezone_set('Asia/Jakarta');
 
-define('DELLA_DEV_COOKIE', 'della_dev_mode');
 define('DELLA_SITE_NAME', "Della's 21st Birthday");
 define('DELLA_UPLOAD_DIR', __DIR__ . '/../assets/uploads');
 define('DELLA_UPLOAD_URL', 'assets/uploads');

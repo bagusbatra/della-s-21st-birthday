@@ -66,16 +66,4 @@ include __DIR__ . '/includes/header.php';
   </form>
 </div>
 
-<div class="admin-card">
-  <h2>Mode Developer</h2>
-  <p class="admin-card--muted">
-    Mode developer masih dikendalikan manual lewat URL, belum ada toggle di sini (lihat
-    <code>RENCANA-PENGEMBANGAN-ADMIN.md</code> — poin keputusan Iterasi 2 kalau ini mau diubah nanti).
-  </p>
-  <ul class="admin-card--muted" style="margin:0; padding-left:18px">
-    <li><code>?dev=on</code> (di situs publik) — buka situs penuh lebih awal untuk keperluan development.</li>
-    <li><code>?dev=off</code> (di situs publik) — matikan lagi mode developer sebelum situs dirilis ke publik.</li>
-  </ul>
-</div>
-
 <?php include __DIR__ . '/includes/footer.php'; ?>

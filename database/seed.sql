@@ -23,6 +23,7 @@
 -- =====================================================================
 
 USE `della_birthday`;
+-- USE `delg1541_della_birthday`;
 
 -- ---------------------------------------------------------------------
 -- 1. Akun admin awal
@@ -61,36 +62,6 @@ INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
 ON DUPLICATE KEY UPDATE `setting_value` = VALUES(`setting_value`);
 
 -- ---------------------------------------------------------------------
--- 3. Memories (Gallery) — migrasi dari INITIAL_MEMORIES di data.js
--- ---------------------------------------------------------------------
-INSERT INTO `memories`
-  (`image_url`, `caption`, `event_date`, `location`, `tag`, `note`, `likes`, `sort_order`, `is_published`)
-VALUES
-  ('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80',
-   'Senyum manismu yang selalu menenangkan setiap hariku', '14 Februari', 'Café Kenangan, Sudirman', 'Momen Manis',
-   'Hari itu kamu mengenakan baju favoritmu dan tertawa renyah saat menceritakan mimpimu.', 21, 1, 1),
-
-  ('https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=800&q=80',
-   'Di bawah langit senja, Della terlihat sangat menawan', '28 Mei', 'Pantai Indah Kapuk', 'Kencan Spesial',
-   'Angin laut menerbangkan rambutmu, dan aku menyadari betapa beruntungnya aku memilikimu.', 18, 2, 1),
-
-  ('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
-   'Buket bunga kecil untuk perempuan paling istimewa', '10 Juli', 'Taman Bunga Kota', 'Kejutan Kecil',
-   'Ekspresi terkejut dan bahagia di wajahmu adalah pemandangan terbaik di dunia.', 25, 3, 1),
-
-  ('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80',
-   'Tawa lepas bersamamu yang tak pernah pudar', '19 September', 'Perpustakaan & Toko Buku', 'Kenangan Hangat',
-   'Kita bisa menghabiskan berjam-jam hanya berbicara tentang hal-hal kecil tanpa pernah bosan.', 19, 4, 1),
-
-  ('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80',
-   'Tatapan matamu yang selalu memberi semangat terbesar', '25 November', 'Rooftop City Lights', 'Momen Manis',
-   'Di antara gemerlap lampu kota, hanya pesonamu yang paling bersinar terang bagiku.', 32, 5, 1),
-
-  ('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80',
-   'Genggaman tangan yang akan selalu kujaga selamanya', '1 Januari', 'Awal Tahun Baru', 'Janji Hati',
-   'Melangkah menyambut tahun baru dan masa depan yang penuh harapan bersamamu.', 40, 6, 1);
-
--- ---------------------------------------------------------------------
 -- 4. Love Letter — migrasi dari DEFAULT_LOVE_LETTER di data.js
 -- ---------------------------------------------------------------------
 INSERT INTO `love_letter` (`id`, `salutation`, `paragraphs_json`, `closing`, `sender`)
@@ -107,34 +78,3 @@ ON DUPLICATE KEY UPDATE
   `closing` = VALUES(`closing`),
   `sender` = VALUES(`sender`);
 
--- ---------------------------------------------------------------------
--- 5. Messages (Amplop Doa) — migrasi dari INITIAL_SECRET_WISHES di data.js
---    Semua data lama otomatis berstatus 'approved' & source 'seed'
---    supaya langsung tampil di situs publik seperti sekarang.
--- ---------------------------------------------------------------------
-INSERT INTO `messages`
-  (`sender_name`, `is_anonymous`, `role_relation`, `avatar_emoji`, `envelope_color`, `message`, `hint`, `status`, `source`, `likes`)
-VALUES
-  ('Mama & Papa', 0, 'Keluarga Tersayang', '🌸', 'rose',
-   'Selamat ulang tahun ke-21 putri tercinta Della Puspa Ardiati. Semoga berkah umur, sehat selalu, dilancarkan jalan menuju cita-citamu, dan senantiasa menjadi kebanggaan keluarga. Doa terbaik Mama dan Papa selalu menyertaimu. 🎂🤲',
-   'Doa hangat penuh kasih dari orang tua', 'approved', 'seed', 12),
-
-  ('Maya & Salsa', 0, 'Bestie Kampus', '✨', 'amber',
-   'Happy 21st Birthday Della sayang! Semoga di usia 21 ini kuliah lancar jaya, makin glowing, selalu bahagia, dan langgeng terus sama ayang! We love you so much! Jangan lupa traktirannya yaa! 💖🥳',
-   'Pesan dari sahabat satu geng kampusmu!', 'approved', 'seed', 8),
-
-  ('Kak Dimas & Kak Rara', 0, 'Kakak Tersayang', '💌', 'pink',
-   'Happy Level 21 adik kami tersayang! Sukses untuk semua rencana hebat di usia kepala dua satu ini. Semoga karir dan impian masa depan tercapai satu per satu dengan mudah!',
-   'Semangat dari kakak-kakak terhebat', 'approved', 'seed', 6),
-
-  ('Nisa Rahmawati', 0, 'Teman Curhat SMA', '🌷', 'purple',
-   'Dellaaa! Selamat 21 tahun! Gak kerasa ya dari jaman seragam putih abu-abu sekarang udah dewasa banget. Tetep jadi Della yang ceria, penyayang, dan pendengar yang baik ya. Miss you loads! 🥰',
-   'Teman seperjuangan masa putih abu-abu', 'approved', 'seed', 9),
-
-  ('Circle Sahabat Seperjuangan', 0, 'Teman Hangout', '🎉', 'indigo',
-   'Barakallah fii umrik Della Puspa Ardiati! Tetap menjadi sosok yang menginspirasi, lembut hatinya, dan selalu membawa aura positif ke manapun Della melangkah.',
-   'Pesan manis penuh ketulusan', 'approved', 'seed', 7),
-
-  ('Kekasih Hati', 0, 'Selamanya Milikmu', '❤️', 'emerald',
-   'Terima kasih telah hadir membawa warna terindah di hidupku. Selamat ulang tahun ke-21 bidadariku, aku mencintaimu hari ini, esok, dan selamanya.',
-   'Pesan rahasia dari seseorang yang paling mencintaimu', 'approved', 'seed', 21);

@@ -5,6 +5,7 @@ import { initBirthdayCake } from './cake.js';
 import { initGallery } from './gallery.js';
 import { initSecretWishes } from './wishes.js';
 import { initLoveLetter } from './letter.js';
+import { initScrollReveal } from './scroll-reveal.js';
 import { icon } from './icons.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,6 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 5. Love Letter Modal
   const loveLetter = initLoveLetter();
+
+  // 5b. Animasi masuk/keluar saat scroll (semua elemen .reveal)
+  initScrollReveal();
 
   // 6. Background Music — autoplay + loop the real audio file, with a
   // fallback that resumes playback on the first user interaction if the
@@ -125,21 +129,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 11. Dev Mode Banner spacing — the banner wraps to 2 lines on narrow
-  // screens, so its height is measured live instead of assumed fixed.
-  const devBanner = document.querySelector('.dev-mode-banner');
+  // 11. Admin Preview Banner spacing — the banner wraps to 2 lines on
+  // narrow screens, so its height is measured live instead of assumed fixed.
+  const previewBanner = document.querySelector('.admin-preview-banner');
   const mainHeader = document.getElementById('main-header');
   const mainContent = document.querySelector('main');
-  if (devBanner && mainHeader) {
-    const adjustForDevBanner = () => {
-      const bannerHeight = devBanner.offsetHeight;
+  if (previewBanner && mainHeader) {
+    const adjustForPreviewBanner = () => {
+      const bannerHeight = previewBanner.offsetHeight;
       mainHeader.style.top = `${bannerHeight}px`;
       if (mainContent) {
         mainContent.style.paddingTop = `${bannerHeight + mainHeader.offsetHeight}px`;
       }
     };
-    adjustForDevBanner();
-    window.addEventListener('resize', adjustForDevBanner);
+    adjustForPreviewBanner();
+    window.addEventListener('resize', adjustForPreviewBanner);
   }
 
 });
